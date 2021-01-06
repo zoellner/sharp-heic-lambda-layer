@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Shared Lambda Layers
+
+Globals:
+  Function:
+    Timeout: 5
+    Runtime: nodejs12.x
+
+Resources:
+  SharpHEICLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: sharp-heic
+      Description: Sharp Layer with HEIC Support
+      ContentUri: ./layer/
+      CompatibleRuntimes:
+        - nodejs12.x
+      LicenseInfo: 'MIT'
+      RetentionPolicy: Retain
+    Metadata:
+      BuildMethod: makefile
+
+  SharpHEICLayerPermission:
+    Type: AWS::Lambda::LayerVersionPermission
+    Properties:
+      Action: lambda:GetLayerVersion
+      LayerVersionArn: !Ref SharpHEICLayer
+      Principal: '*'
+
+  SharpTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+        CodeUri: ./test/
+        Handler: index.handler
+        Layers:
+          - !Ref SharpHEICLayer
+        Events:
+          TestImage:
+            Type: Api
+            Properties:
+              Path: /
+              Method: get
+
+Outputs:
+  SharpHEICLayerArn:
+    Value: !Ref SharpHEICLayer
+    Description: ARN of the Sharp HEIC Lambda Layer
+    Export:
+      Name: SharpHEICLayerArn

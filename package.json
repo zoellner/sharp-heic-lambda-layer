@@ -1,0 +1,34 @@
+{
+  "name": "sharp-heic-lambda-layer",
+  "version": "1.0.0",
+  "description": "Lambda Layer providing sharp with HEIC support",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npm run lint",
+    "lint": "npx eslint .",
+    "lint:fix": "npx eslint --fix .",
+    "build": "sam build --use-container",
+    "predeploy": "sam package --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --output-template-file packaged-template.yaml",
+    "deploy": "sam deploy --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --template-file packaged-template.yaml --stack-name lambda-layers --capabilities CAPABILITY_IAM --region $(echo $AWS_REGION)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoellner/sharp-heic-lambda-layer.git"
+  },
+  "keywords": [],
+  "author": "Andreas Zoellner",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zoellner/sharp-heic-lambda-layer/issues"
+  },
+  "homepage": "https://github.com/zoellner/sharp-heic-lambda-layer#readme",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.17.0"
+  }
+}

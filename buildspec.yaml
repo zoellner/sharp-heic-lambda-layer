@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  variables:
+    NODE_ENV: production
+    DISABLE_OPENCOLLECTIVE: true
+    SAM_CLI_TELEMETRY: 0
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - NODE_ENV=development npm ci
+      - npm audit --audit-level=moderate
+      - npm run lint
+  build:
+    commands:
+      - npm run build
+      - npm run deploy
+  # post_build:
+  #   commands:
+artifacts:
+  files:
+    - .aws-sam/**/*
+cache:
+  paths:
+    - '/root/.npm/**/*'
