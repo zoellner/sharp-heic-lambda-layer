@@ -10,7 +10,8 @@
     "test": "npm run lint",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
-    "build": "sam build --use-container",
+    "prebuild": "docker pull lambci/lambda:build-nodejs12.x && docker tag lambci/lambda:build-nodejs12.x amazon/aws-sam-cli-build-image-nodejs12.x",
+    "build": "sam build --use-container --skip-pull-image",
     "predeploy": "sam package --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --output-template-file packaged-template.yaml",
     "deploy": "sam deploy --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --template-file packaged-template.yaml --stack-name lambda-layers --capabilities CAPABILITY_IAM --region $(echo $AWS_REGION)"
   },
