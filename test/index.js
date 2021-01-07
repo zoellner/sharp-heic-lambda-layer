@@ -25,5 +25,3 @@ function imageResponse(data, info) {
     isBase64Encoded: true
   };
 }
-
-exports.handler();
