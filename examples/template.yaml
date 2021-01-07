@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Sample Lambda function using the sharp-heic lambda layer
+
+Resources:
+  SharpTestFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/
+      Handler: index.handler
+      Runtime: nodejs12.x
+      Layers:
+        - !GetAtt SharpHEIC.Outputs.LayerArn
+
+  SharpHEIC:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location:
+        ApplicationId: arn:aws:serverlessrepo:us-east-1:776954778331:applications/sharp-heic
+        SemanticVersion: 1.0.0

@@ -53,24 +53,7 @@ Resources:
       LayerVersionArn: !Ref SharpHEICLayer
       Principal: '*'
 
-  SharpTestFunction:
-    Type: AWS::Serverless::Function
-    Condition: IsDeployTest
-    Properties:
-      CodeUri: ./test/
-      Handler: index.handler
-      Layers:
-        - !Ref SharpHEICLayer
-      Events:
-        TestImage:
-          Type: Api
-          Properties:
-            Path: /
-            Method: get
-
 Outputs:
-  SharpHEICLayerArn:
+  LayerArn:
     Value: !Ref SharpHEICLayer
     Description: ARN of the Sharp HEIC Lambda Layer
-    Export:
-      Name: SharpHEICLayerArn

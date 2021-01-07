@@ -11,7 +11,6 @@ exports.handler = async (event) => {
     .toFormat('webp')
     .toBuffer({resolveWithObject: true});
   console.log(info);
-  // await fs.writeFile(path.resolve(__dirname, 'test-output.webp'), data);
   return imageResponse(data, info);
 };
 
