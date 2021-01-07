@@ -9,6 +9,8 @@ Resources:
       CodeUri: ./src/
       Handler: index.handler
       Runtime: nodejs12.x
+      Timeout: 10
+      MemorySize: 1024
       Layers:
         - !GetAtt SharpHEIC.Outputs.LayerArn
 
