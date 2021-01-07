@@ -15,23 +15,6 @@ Metadata:
     SemanticVersion: 1.0.3
     SourceCodeUrl: https://github.com/zoellner/sharp-heic-lambda-layer
 
-Globals:
-  Function:
-    Timeout: 5
-    Runtime: nodejs12.x
-
-Parameters:
-  DeployTest:
-    Default: false
-    Description: Choose whether to deploy the test function or not
-    Type: String
-    AllowedValues:
-      - true
-      - false
-
-Conditions:
-  IsDeployTest: !Equals [ !Ref DeployTest, true ]
-
 Resources:
   SharpHEICLayer:
     Type: AWS::Serverless::LayerVersion
