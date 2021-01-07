@@ -15,7 +15,7 @@ Add a `AWS::Serverless::Application` resource similar to the one below to a SAM 
     Properties:
       Location:
         ApplicationId: arn:aws:serverlessrepo:us-east-1:776954778331:applications/sharp-heic
-        SemanticVersion: 1.0.0
+        SemanticVersion: 1.0.3
 ```
 See [example template](examples/sam-template.yaml) for a complete sample template.
 
@@ -25,6 +25,8 @@ cd examples
 sam build
 sam deploy --guided --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND
 ```
+
+You can also use the "Deploy" button in the [Serverless Repo Application Page](https://serverlessrepo.aws.amazon.com/applications/us-east-1/776954778331/sharp-heic)
 
 ### Lambda Layer
 - Add the lambda layer with ARN `arn:aws:lambda:us-east-1:776954778331:layer:sharp-heic:${LAYER_VERSION}` to any lambda function (replace `${LAYER_VERSION}` with the desired version, e.g. `5`)
@@ -42,7 +44,7 @@ This lambda layer contains the node module [sharp](https://github.com/lovell/sha
 The following table lists the layer version and SAM Application version together with the version of each dependency
 | Layer |    SAM |  sharp | libvips | libheif | libwebp | libde265 |
 |-------|--------|--------|---------|---------|---------|----------|
-|     5 |  1.0.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |
+|     5 |  1.0.3 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |
 
 ### CompatibleRuntimes
 - `nodejs12.x`
