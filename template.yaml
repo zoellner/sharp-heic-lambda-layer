@@ -12,7 +12,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ['sharp', 'heic', 'layer']
     HomePageUrl: https://github.com/zoellner/sharp-heic-lambda-layer
-    SemanticVersion: 1.0.2
+    SemanticVersion: 1.0.3
     SourceCodeUrl: https://github.com/zoellner/sharp-heic-lambda-layer
 
 Globals:
