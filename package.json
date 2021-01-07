@@ -1,6 +1,6 @@
 {
   "name": "sharp-heic-lambda-layer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lambda Layer providing sharp with HEIC support",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,8 @@
     "build": "sam build --use-container --skip-pull-image",
     "predeploy": "sam package --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --output-template-file packaged-template.yaml",
     "deploy": "sam deploy --s3-bucket $(echo $SAM_BUCKET) --s3-prefix lambda-layers --template-file packaged-template.yaml --stack-name lambda-layers --capabilities CAPABILITY_IAM --region $(echo $AWS_REGION)",
-    "publish": "sam publish --template packaged-template.yaml --region $(echo $AWS_REGION)"
+    "publish": "sam publish --template packaged-template.yaml --region $(echo $AWS_REGION)",
+    "version": "node deployment/updateMetadata.js $npm_package_version && git add -A template.yaml examples/template.yaml"
   },
   "repository": {
     "type": "git",
