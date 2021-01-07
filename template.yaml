@@ -7,6 +7,18 @@ Globals:
     Timeout: 5
     Runtime: nodejs12.x
 
+Parameters:
+  DeployTest:
+    Default: false
+    Description: Choose whether to deploy the test function or not
+    Type: String
+    AllowedValues:
+      - true
+      - false
+
+Conditions:
+  IsDeployTest: !Equals [ !Ref DeployTest, true ]
+
 Resources:
   SharpHEICLayer:
     Type: AWS::Serverless::LayerVersion
@@ -30,17 +42,18 @@ Resources:
 
   SharpTestFunction:
     Type: AWS::Serverless::Function
+    Condition: IsDeployTest
     Properties:
-        CodeUri: ./test/
-        Handler: index.handler
-        Layers:
-          - !Ref SharpHEICLayer
-        Events:
-          TestImage:
-            Type: Api
-            Properties:
-              Path: /
-              Method: get
+      CodeUri: ./test/
+      Handler: index.handler
+      Layers:
+        - !Ref SharpHEICLayer
+      Events:
+        TestImage:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
 
 Outputs:
   SharpHEICLayerArn:
