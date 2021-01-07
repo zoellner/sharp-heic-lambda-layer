@@ -21,6 +21,7 @@ phases:
   post_build:
     commands:
       - npm run deploy
+      - npm run publish
 artifacts:
   files:
     - .aws-sam/**/*
