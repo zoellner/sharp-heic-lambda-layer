@@ -12,11 +12,4 @@ Resources:
       Timeout: 10
       MemorySize: 1024
       Layers:
-        - !GetAtt SharpHEIC.Outputs.LayerArn
-
-  SharpHEIC:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location:
-        ApplicationId: arn:aws:serverlessrepo:us-east-1:776954778331:applications/sharp-heic
-        SemanticVersion: 1.0.3
+        - !ImportValue SharpHEICLayerArn

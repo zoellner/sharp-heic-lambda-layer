@@ -6,31 +6,51 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 
 ## Usage
 
-### Serverless Application
-Add a `AWS::Serverless::Application` resource similar to the one below to a SAM template and reference the layer in a lambda function using `!GetAtt SharpHEIC.Outputs.SharpHEICLayerArn`
+Due to potential license concerns for the HEVC patent group, this repo can't be provided in the most convenient way which would be a shared lambda layer or an Application in the AWS Serverless Repo.
 
-```yaml
-  SharpHEIC:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location:
-        ApplicationId: arn:aws:serverlessrepo:us-east-1:776954778331:applications/sharp-heic
-        SemanticVersion: 1.0.3
+But you can compile and deploy this lambda layer yourself at your own risk and use it wihin your own accounts. All you need is an S3 bucket to deploy the compiled code to (replace `your-s3-bucket` in the code snippet below). Please see the note below regarding the build process.
+
+It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below.
+
+```bash
+npm run build
+SAM_BUCKET=your-s3-bucket npm run deploy
 ```
-See [example template](examples/sam-template.yaml) for a complete sample template.
+
 
 The example can be deployed using the following commands
 ```bash
 cd examples
 sam build
-sam deploy --guided --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND
+sam deploy --guided
 ```
 
-You can also use the "Deploy" button in the [Serverless Repo Application Page](https://serverlessrepo.aws.amazon.com/applications/us-east-1/776954778331/sharp-heic)
-
 ### Lambda Layer
-- Add the lambda layer with ARN `arn:aws:lambda:us-east-1:776954778331:layer:sharp-heic:${LAYER_VERSION}` to any lambda function (replace `${LAYER_VERSION}` with the desired version, e.g. `5`)
+- Add the lambda layer with ARN `arn:aws:lambda:us-east-1:${AWS:AccountId}:layer:sharp-heic:${LAYER_VERSION}` to any lambda function (replace `${LAYER_VERSION}` with the appropriate version and `${AWS:AccountId}` if you're not using a layer from the same account as the function). You can also import the layer ARN using `!ImportValue SharpHEICLayerArn`.
 - Remove sharp from the dependencies in the function code (it will otherwise conflict with the one provided through the layer)
+- See [example template](examples/sam-template.yaml) for a complete sample template.
+
+### Environment Variables for build
+|            Name | Required |           Default Value |                                   Description |
+|-----------------|----------|-------------------------|-----------------------------------------------|
+|      SAM_BUCKET |      yes |                         | Name of S3 Bucket to store layer              |
+|       S3_PREFIX |       no | sharp-heic-lambda-layer | Prefix within S3 Bucket to store layer        |
+|      STACK_NAME |       no | sharp-heic-lambda-layer | Name of CloudFormation stack                  |
+|      AWS_REGION |       no |               us-east-1 | AWS Region to deploy to                       |
+| ORGANIZATION_ID |       no |                    none | ID of Organization to grant access to layer   |
+|       PRINCIPAL |       no |                 account | Principal to grant access to layer            |
+
+For details on `ORGANIZATION_ID` and `PRINCIPAL` please see the equivalent properties in the [CloudFormation Docs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversionpermission.html).
+
+The special value `none` for `ORGANIZATION_ID` is used to disable organization based access.
+The special value `account` for `PRINCIPAL` is used to give access to the account the layer is deployed to.
+
+The environment variables are used to create a `samconfig.toml` file that configures the `sam package` and `sam deploy` commands.
+
+### Note regarding build process
+The build process uses docker images from [lambci](https://hub.docker.com/r/lambci/lambda). AWS SAM CLI has a breaking change starting in v1 that sets the docker image for the build process to `amazon/aws-sam-cli-build-image-nodejs12.x` which is an image that is stripped down too much to make it useful to build anything (missing many dependencies to compile things, missing yum). The workaround for this is to use the `lambci/lambda:build-nodejs12.x` image and retag it as `amazon/aws-sam-cli-build-image-nodejs12.x`. Please note that this might affect your other build processes. It is therefore recommended to build this repo in an isolated environment such as AWS CodeBuild.
+
+As Docker Hub introduced rate limits for public pulls, the `lambci/lambda:build-nodejs12.x` often can't be used from within AWS CodeBuild. The image has therefore been repulished in the public AWS ECR registry as `public.ecr.aws/n8r6f1x4/lambci-temporary:build-nodejs12.x`.
 
 
 ## Background
@@ -41,10 +61,10 @@ This repo exists as it is rather painful to compile all libraries required to ge
 This lambda layer contains the node module [sharp](https://github.com/lovell/sharp). But unlike a normal installation via `npm i sharp` this layer does not use the prebuilt sharp and libvips binaries. This layer compiles libwebp, libde265, libheif, libvips, and sharp from source in order to provide HEIC/HEIF (and webp) functionality in an AWS Lambda environment.
 
 ### Dependencies
-The following table lists the layer version and SAM Application version together with the version of each dependency
-| Layer |    SAM |  sharp | libvips | libheif | libwebp | libde265 |
-|-------|--------|--------|---------|---------|---------|----------|
-|     5 |  1.0.3 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |
+The following table lists the release version of this repo together with the version of each dependency
+| release |  sharp | libvips | libheif | libwebp | libde265 |
+|---------|--------|---------|---------|---------|----------|
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |
 
 ### CompatibleRuntimes
 - `nodejs12.x`

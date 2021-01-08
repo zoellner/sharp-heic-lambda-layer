@@ -69,3 +69,5 @@ typings/
 .yarn-integrity
 
 .aws-sam
+samconfig.toml
+packaged-template.yaml
