@@ -3,6 +3,10 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiKzJabytWb002SWpGcnVPMFp2K2VIZVR3QTZkYkx5L1gyZmFyV281emxnNzRFeklPdWF6ZDdBVllBczA4MVFxdDhpZnBaMnNneFk5WWx4Y3ZxUkplejIwPSIsIml2UGFyYW1ldGVyU3BlYyI6IkJKYlVqRVNSQlk2am5rUmwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
+## Prerequisites
+
+ * Docker
+ * [SAM](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
 
 ## Usage
 
