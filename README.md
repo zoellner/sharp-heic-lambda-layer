@@ -6,7 +6,7 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 ## Prerequisites
 
  * Docker
- * [SAM](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
+ * [SAM v1.22.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
 
 ## Usage
 
@@ -52,10 +52,13 @@ The special value `account` for `PRINCIPAL` is used to give access to the accoun
 The environment variables are used to create a `samconfig.toml` file that configures the `sam package` and `sam deploy` commands.
 
 ### Note regarding build process
-The build process uses docker images from [lambci](https://hub.docker.com/r/lambci/lambda). AWS SAM CLI has a breaking change starting in v1 that sets the docker image for the build process to `amazon/aws-sam-cli-build-image-nodejs12.x` which is an image that is stripped down too much to make it useful to build anything (missing many dependencies to compile things, missing yum). The workaround for this is to use the `lambci/lambda:build-nodejs12.x` image and retag it as `amazon/aws-sam-cli-build-image-nodejs12.x`. Please note that this might affect your other build processes. It is therefore recommended to build this repo in an isolated environment such as AWS CodeBuild.
+This requires `sam-cli` version `v1.22.0` or higher in order to use the `--build-image` option.
+
+The default build image for sam-cli is `public.ecr.aws/sam/build-nodejs12.x` which is an image that is stripped down too much to make it useful to build anything (missing many dependencies to compile things, missing yum). The workaround for this is to use the `lambci/lambda:build-nodejs12.x` image.
 
 As Docker Hub introduced rate limits for public pulls, the `lambci/lambda:build-nodejs12.x` often can't be used from within AWS CodeBuild. The image has therefore been repulished in the public AWS ECR registry as `public.ecr.aws/n8r6f1x4/lambci-temporary:build-nodejs12.x`.
 
+In order to pull the image from AWS ECR you might have to login to ECR using the command: `aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/n8r6f1x4`
 
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.
@@ -66,9 +69,10 @@ This lambda layer contains the node module [sharp](https://github.com/lovell/sha
 
 ### Dependencies
 The following table lists the release version of this repo together with the version of each dependency
-| release |  sharp | libvips | libheif | libwebp | libde265 |
-|---------|--------|---------|---------|---------|----------|
-|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |
+| release |  sharp | libvips | libheif | libwebp | libde265 | nodejs |
+|---------|--------|---------|---------|---------|----------|--------|
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |     12 |
+|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8 |     12 |
 
 ### CompatibleRuntimes
 - `nodejs12.x`
