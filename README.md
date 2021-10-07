@@ -62,7 +62,7 @@ This repo exists as it is rather painful to compile all libraries required to ge
 This lambda layer contains the node module [sharp](https://github.com/lovell/sharp). But unlike a normal installation via `npm i sharp` this layer does not use the prebuilt sharp and libvips binaries. This layer compiles libwebp, libde265, libheif, libvips, and sharp from source in order to provide HEIC/HEIF (and webp) functionality in an AWS Lambda environment.
 
 ### Dependencies
-The following table lists the release version of this repo together with the version of each dependency
+The following table lists the release version of this repo together with the version of each dependency. Patch versions are related to the build process or documentation and have the same dependencies as the minor version.
 | release |  sharp | libvips | libheif | libwebp | libde265 | nodejs |
 |---------|--------|---------|---------|---------|----------|--------|
 |   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |     12 |
