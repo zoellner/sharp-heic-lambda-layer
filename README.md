@@ -6,7 +6,7 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 ## Prerequisites
 
  * Docker
- * [SAM v1.22.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
+ * [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
 
 ## Usage
 
@@ -52,13 +52,7 @@ The special value `account` for `PRINCIPAL` is used to give access to the accoun
 The environment variables are used to create a `samconfig.toml` file that configures the `sam package` and `sam deploy` commands.
 
 ### Note regarding build process
-This requires `sam-cli` version `v1.22.0` or higher in order to use the `--build-image` option.
-
-The default build image for sam-cli is `public.ecr.aws/sam/build-nodejs12.x` which is an image that is stripped down too much to make it useful to build anything (missing many dependencies to compile things, missing yum). The workaround for this is to use the `lambci/lambda:build-nodejs12.x` image.
-
-As Docker Hub introduced rate limits for public pulls, the `lambci/lambda:build-nodejs12.x` often can't be used from within AWS CodeBuild. The image has therefore been repulished in the public AWS ECR registry as `public.ecr.aws/n8r6f1x4/lambci-temporary:build-nodejs12.x`.
-
-In order to pull the image from AWS ECR you might have to login to ECR using the command: `aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/n8r6f1x4`
+Previously, some custom docker images were needed to build this layer. AWS has since published newer images which work out of the box. `saml-cli` version `v1.33.0` is using `public.ecr.aws/sam/build-nodejs14.x:latest-x86_64`
 
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.
@@ -73,9 +67,11 @@ The following table lists the release version of this repo together with the ver
 |---------|--------|---------|---------|---------|----------|--------|
 |   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |     12 |
 |   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8 |     12 |
+|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8 |     14 |
 
 ### CompatibleRuntimes
-- `nodejs12.x`
+- `nodejs12.x` (v1.x)
+- `nodejs14.x` (v2.x)
 
 
 ## Contributions
