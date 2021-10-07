@@ -10,6 +10,8 @@ phases:
   install:
     runtime-versions:
       nodejs: 14
+    commands:
+      - pip3 install aws-sam-cli --upgrade --user
   pre_build:
     commands:
       - NODE_ENV=development npm ci
@@ -20,6 +22,7 @@ phases:
       - npm run build
   post_build:
     commands:
+      - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi" # check if build was successful. exit otherwise.
       - npm run deploy
 artifacts:
   files:
