@@ -1,0 +1,67 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  NODE_ENV: production
+  DISABLE_OPENCOLLECTIVE: true
+  SAM_CLI_TELEMETRY: 0
+  AWS_REGION: us-east-2
+  SAM_BUCKET: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Use Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install awscli
+        run: |
+          pip3 install aws-sam-cli --upgrade --user
+
+      - name: Install Node Modules
+        run: npm ci
+        env:
+          NODE_ENV: development
+
+      - name: Audit Node Modules
+        run: npm audit --audit-level=moderate
+
+      - name: Install Node Modules
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # To deploy to AWS:
+      # Set SAM_BUCKET to your S3 Bucket for SAM artifacts
+      # Set org-level or repo-level secrets:
+      #   AWS_ACCESS_KEY_ID
+      #   AWS_SECRET_ACCESS_KEY
+      # Attaching the following policies to the user / role used by this
+      #   workflow would be sufficient, but also overly broad:
+      #   - AWSLambda_FullAccess
+      #   - AmazonS3FullAccess
+      - if: ${{ env.SAM_BUCKET != '' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        name: Deploy
+        run: npm run deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

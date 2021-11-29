@@ -1,7 +1,8 @@
 # Sharp for AWS Lambda (with HEIC support)
 AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (and WebP) support
 
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiKzJabytWb002SWpGcnVPMFp2K2VIZVR3QTZkYkx5L1gyZmFyV281emxnNzRFeklPdWF6ZDdBVllBczA4MVFxdDhpZnBaMnNneFk5WWx4Y3ZxUkplejIwPSIsIml2UGFyYW1ldGVyU3BlYyI6IkJKYlVqRVNSQlk2am5rUmwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![CodeBuild Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiKzJabytWb002SWpGcnVPMFp2K2VIZVR3QTZkYkx5L1gyZmFyV281emxnNzRFeklPdWF6ZDdBVllBczA4MVFxdDhpZnBaMnNneFk5WWx4Y3ZxUkplejIwPSIsIml2UGFyYW1ldGVyU3BlYyI6IkJKYlVqRVNSQlk2am5rUmwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![GitHub Actions Build Status](https://github.com/zoellner/sharp-heic-lambda-layer/workflows/CI%20Build/badge.svg)
 
 ## Prerequisites
 
@@ -14,7 +15,7 @@ Due to potential license concerns for the HEVC patent group, this repo can't be 
 
 But you can compile and deploy this lambda layer yourself at your own risk and use it wihin your own accounts. All you need is an S3 bucket to deploy the compiled code to (replace `your-s3-bucket` in the code snippet below). Please see the note below regarding the build process.
 
-It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below.
+It is recommended to automate this process using AWS CodeBuild or GitHub Actions. A `buildspec.yaml` file is provided as an example for CodeBuild and `.github/workflows/ci.yml` is provided as an example for GitHub Actions. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below.
 
 ```bash
 npm run build
