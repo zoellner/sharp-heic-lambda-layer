@@ -1,10 +1,14 @@
 name: CI Build
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  # To enable build on push to main or pr to main, uncomment below
+  # push:
+  #   branches: [ main ]
+  # pull_request:
+  #   branches: [ main ]
+
+  # Allow invocation of this workflow through the GitHub.com UI
+  workflow_dispatch: {}
 
 env:
   PR_NUMBER: ${{ github.event.pull_request.number }}
