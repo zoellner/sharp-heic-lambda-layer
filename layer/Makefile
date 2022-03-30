@@ -48,4 +48,5 @@ installLib:
 		giflib-devel \
 		libexif-devel \
 		librsvg2-devel \
-		libtiff-devel
+		libtiff-devel \
+		lcms2-devel
