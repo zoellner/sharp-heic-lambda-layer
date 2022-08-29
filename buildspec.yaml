@@ -9,7 +9,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 14
+      nodejs: 16
     commands:
       - pip3 install aws-sam-cli --upgrade --user
   pre_build:
