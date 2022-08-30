@@ -15,9 +15,11 @@ build-SharpHEICLayer: libvips
 
 	# sharp uses several of the libs we installed or compiled. extract the full list and copy all of those into /opt/lib
 	# extract list with ldd from sharp.node, manipulate a bit with sed to only get the absolute paths, then copy
-	LD_LIBRARY_PATH=$(PREFIX_PATH)/lib:/usr/local/lib npm --prefix "$(ARTIFACTS_DIR)/nodejs/" install sharp@$(SHARP_VERSION)
+	LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(PREFIX_PATH)/lib npm --prefix "$(ARTIFACTS_DIR)/nodejs/" install sharp@$(SHARP_VERSION)
 	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node
 	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | sed -nE "s/^[^\/\n]*(\/[^ ]+)(.*)/\1/p"
+	pkg-config --modversion vips-cpp
+	$(PKG_CONFIG_PATH) --modversion vips-cpp
 	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | sed -nE "s/^[^\/\n]*(\/[^ ]+)(.*)/\1/p" | xargs cp -t $(ARTIFACTS_DIR)/lib
 
 libwebp:
