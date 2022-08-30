@@ -9,6 +9,6 @@
   "author": "Andreas Zoellner",
   "license": "MIT",
   "engines": {
-    "node": ">=14.0"
+    "node": ">=16.0"
   }
 }
