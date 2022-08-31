@@ -25,6 +25,7 @@ Resources:
       ContentUri: ./layer/
       CompatibleRuntimes:
         - nodejs14.x
+        - nodejs16.x
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
     Metadata:

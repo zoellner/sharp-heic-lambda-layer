@@ -7,7 +7,7 @@
     "test": "npm run lint",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
-    "build": "sam build --use-container",
+    "build": "sam build",
     "prepackage": "node deployment/createSAMConfiguration.js > samconfig.toml",
     "package": "sam package",
     "predeploy": "npm run package",
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/zoellner/sharp-heic-lambda-layer#readme",
   "engines": {
-    "node": ">=14.0"
+    "node": ">=16.0"
   },
   "devDependencies": {
     "eslint": "^7.32.0"
