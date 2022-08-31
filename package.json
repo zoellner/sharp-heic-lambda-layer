@@ -1,6 +1,6 @@
 {
   "name": "sharp-heic-lambda-layer",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "Lambda Layer providing sharp with HEIC support",
   "main": "index.js",
   "scripts": {
