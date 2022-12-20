@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: CodeBuild Project for sharp-heic-lambda-layer
+
+Parameters:
+  SourceRepo:
+    Description: Github Location for Source Repo
+    Type: String
+    Default: https://github.com/zoellner/sharp-heic-lambda-layer.git
+  CodeBuildRole:
+    Description: ARN of IAM Role used to build the layer
+    Type: String
+  BadgeEnabled:
+    Description: Enable Build Badge
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+  DeploymentBucket:
+    Description: Name of an S3 Bucket used for deployment
+    Type: String
+
+Resources:
+  SharpHEICCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: sharp-heic-lambda-layer
+      Description: Sharp Lambda Layer with HEIC Support
+      ServiceRole: !Ref CodeBuildRole
+      BadgeEnabled: !Ref BadgeEnabled
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Source:
+        Auth:
+          Type: OAUTH
+        Type: GITHUB
+        Location: !Ref SourceRepo
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:4.0
+        ImagePullCredentialsType: CODEBUILD
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: SAM_BUCKET
+            Type: PLAINTEXT
+            Value: !Ref DeploymentBucket
+          - Name: STACK_NAME
+            Type: PLAINTEXT
+            Value: sharp-heic-lambda-layer
+      Cache:
+        Type: NO_CACHE
+      Triggers:
+        # BuildType: BUILD
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: PUSH
+              ExcludeMatchedPattern: false
+            - Type: HEAD_REF
+              Pattern: '^refs/tags/.*'
+              ExcludeMatchedPattern: false
+        Webhook: true
+      EncryptionKey: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/s3

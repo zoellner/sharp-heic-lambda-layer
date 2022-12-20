@@ -1,12 +1,13 @@
 # Sharp for AWS Lambda (with HEIC support)
 AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (and WebP) support
 
-![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiKzJabytWb002SWpGcnVPMFp2K2VIZVR3QTZkYkx5L1gyZmFyV281emxnNzRFeklPdWF6ZDdBVllBczA4MVFxdDhpZnBaMnNneFk5WWx4Y3ZxUkplejIwPSIsIml2UGFyYW1ldGVyU3BlYyI6IkJKYlVqRVNSQlk2am5rUmwiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiUnY2cHpCUEwybDl5b2lIUys2b1lhN1BxMFVvb1pxMU8rUUpNNG1hSEFFN2VCUmxkK2t6azZrMEVOY1Y2RW40TGZ3NlF1bUo1dUE0ZVhiRm5GN3Q2YlJBPSIsIml2UGFyYW1ldGVyU3BlYyI6IjVxNm9zL3pWa0dQa21lNXAiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 
 ## Prerequisites
 
  * Docker
  * [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
+ * Node v16 (for v3.x)
 
 ## Usage
 
@@ -15,6 +16,8 @@ Due to potential license concerns for the HEVC patent group, this repo can't be 
 But you can compile and deploy this lambda layer yourself at your own risk and use it wihin your own accounts. All you need is an S3 bucket to deploy the compiled code to (replace `your-s3-bucket` in the code snippet below). Please see the note below regarding the build process.
 
 It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below. The base image that should be used is `aws/codebuild/amazonlinux2-x86_64-standard:4.0`.
+
+A sample CloudFormation template is provided to setup the CodeBuild project, [sample-buildproject.yaml](sample-buildproject.yaml).
 
 ```bash
 npm run build
