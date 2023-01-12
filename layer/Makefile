@@ -59,6 +59,4 @@ installLib:
 		libexif-devel \
 		librsvg2-devel \
 		libtiff-devel \
-		lcms2-devel \
-		libaom-devel \ 
-		libaom
+		lcms2-devel 
