@@ -1,6 +1,6 @@
 'use strict';
 
-const region = process.env.AWS_REGION || 'us-east-1';
+const region = process.env.AWS_REGION || 'ap-southeast-2';
 const stackName = process.env.STACK_NAME || 'sharp-heic-lambda-layer';
 const samBucket = process.env.SAM_BUCKET;
 const s3Prefix = process.env.S3_PREFIX || 'sharp-heic-lambda-layer';
