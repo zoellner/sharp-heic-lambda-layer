@@ -61,3 +61,9 @@ installLib:
 		libtiff-devel \
 		lcms2-devel \
 		libaom-devel
+	yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+	yum install https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+	yum install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+	yum install yum-utils
+	yum-config-manager --enable remi
+	yum install vips vips-heif vips-devel vips-tools
