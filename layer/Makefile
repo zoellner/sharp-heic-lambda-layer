@@ -62,12 +62,12 @@ installLib:
 		lcms2-devel \
 		libaom-devel
 	yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	yum install -y https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
+	# yum install -y https://download1.rpmfusion.org/free/el/rpmfusion-free-release-7.noarch.rpm
 	yum install -y http://rpms.remirepo.net/enterprise/remi-release-7.rpm
 	yum install -y yum-utils
 	yum-config-manager --enable remi
 	yum-config-manager --setopt=remi.priority=1 --save
 	yum install -y vips
 	yum install -y vips-heif
-	yum install -y vips-devel
+	yum install -y vips-devel --skip-broken
 	yum install -y vips-tools
