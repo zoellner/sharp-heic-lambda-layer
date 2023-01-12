@@ -93,5 +93,6 @@ installLib:
 		nasm \
 		pkg-config \
 		meson \
-		ninja-build
-
+		ninja-build \
+		libaom-devel \ 
+		libaom

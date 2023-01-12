@@ -6,7 +6,7 @@ Parameters:
   SourceRepo:
     Description: Github Location for Source Repo
     Type: String
-    Default: https://github.com/zoellner/sharp-heic-lambda-layer.git
+    Default: https://github.com/PropHero-Tech/sharp-heic-lambda-layer.git
   CodeBuildRole:
     Description: ARN of IAM Role used to build the layer
     Type: String
