@@ -56,11 +56,12 @@ installLib:
 	yum-config-manager --setopt=remi.priority=1 --save
 	yum install -y vips
 	yum install -y vips-heif
-	yum install -y vips-devel
+	# yum install -y vips-devel
 	yum install -y vips-tools
 	yum install -y yum-plugin-ovl && \
 	yum install -y \
 		glib2-devel \
+		poppler-glib-devel \
 		expat-devel \
 		libjpeg-devel \
 		libjpeg-turbo-devel \
@@ -70,4 +71,5 @@ installLib:
 		librsvg2-devel \
 		libtiff-devel \
 		lcms2-devel \
-		libaom-devel
+		libaom-devel \
+		libaom
