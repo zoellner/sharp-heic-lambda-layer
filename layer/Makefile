@@ -90,6 +90,7 @@ installLib:
 	dnf groupinstall -y "Development Tools" && \
 	dnf install -y \
 		glib2-devel \
+		poppler-glib-devel \
 		expat-devel \
 		libjpeg-turbo-devel \
 		libpng-devel \
