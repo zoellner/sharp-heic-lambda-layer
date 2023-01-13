@@ -73,9 +73,9 @@ installLib:
 		libtiff-devel \
 		lcms2-devel \
 		libaom-devel \
-		libaom \
-		ffmpeg \
-		ffmpeg-devel
+		libaom
+		# ffmpeg \
+		# ffmpeg-devel
 	yum install -y dav1d
 	yum install -y \
 		libdav1d \
