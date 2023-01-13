@@ -75,7 +75,8 @@ installLib:
 		libaom-devel \
 		libaom \
 		ffmpeg \
-		ffmpeg-devel \
-		dav1d \
+		ffmpeg-devel
+	yum install -y dav1d
+	yum install -y \
 		libdav1d \
 		libdav1d-devel
