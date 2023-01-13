@@ -44,8 +44,8 @@ libheif: libde265 x265
 
 libvips: installLib libheif libwebp
 	# libvips
-	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.gz | tar zx
-	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
+	# curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.gz | tar zx
+	# cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 installLib:
 	yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -54,10 +54,11 @@ installLib:
 	yum install -y yum-utils
 	yum-config-manager --enable remi
 	yum-config-manager --setopt=remi.priority=1 --save
-	yum install -y vips
-	yum install -y vips-heif
-	# yum install -y vips-devel
-	yum install -y vips-tools
+	yum install -y \
+		vips \
+		vips-heif \
+		vips-devel \
+		vips-tools 
 	yum install -y yum-plugin-ovl && \
 	yum install -y \
 		glib2-devel \
@@ -72,4 +73,9 @@ installLib:
 		libtiff-devel \
 		lcms2-devel \
 		libaom-devel \
-		libaom
+		libaom \
+		ffmpeg \
+		ffmpeg-devel \
+		dav1d \
+		libdav1d \
+		libdav1d-devel
