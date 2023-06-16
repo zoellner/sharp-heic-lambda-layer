@@ -2,6 +2,7 @@
 
 const region = process.env.AWS_REGION || 'us-east-1';
 const stackName = process.env.STACK_NAME || 'sharp-heic-lambda-layer';
+const layerName = process.env.LAYER_NAME || 'sharp-heic';
 const samBucket = process.env.SAM_BUCKET;
 const s3Prefix = process.env.S3_PREFIX || 'sharp-heic-lambda-layer';
 const organizationId = process.env.ORGANIZATION_ID || 'none';
@@ -18,10 +19,11 @@ region = "${region}"
 output_template_file = "${packagedTemplate}"
 [default.deploy.parameters]
 stack_name = "${stackName}"
+layer_name = "${layerName}"
 s3_bucket = "${samBucket}"
 s3_prefix = "${s3Prefix}"
 region = "${region}"
 capabilities = "CAPABILITY_IAM"
-parameter_overrides = "OrganizationId=${organizationId} Principal=${principal}"
+parameter_overrides = "OrganizationId=${organizationId} Principal=${principal} LayerName=${layerName}"
 template_file  = "${packagedTemplate}"
 `);
