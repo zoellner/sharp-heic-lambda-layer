@@ -73,11 +73,13 @@ The following table lists the release version of this repo together with the ver
 |   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8 |     14 |
 |   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
 |   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
+|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     18 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
 - `nodejs14.x` (v2.x)
 - `nodejs16.x` (v3.x)
+- `nodejs18.x` (v3.2+)
 
 
 ## Contributions

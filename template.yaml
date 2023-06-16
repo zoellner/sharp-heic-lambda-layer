@@ -26,6 +26,7 @@ Resources:
       CompatibleRuntimes:
         - nodejs14.x
         - nodejs16.x
+        - nodejs18.x
       LicenseInfo: 'MIT'
       RetentionPolicy: Retain
     Metadata:
