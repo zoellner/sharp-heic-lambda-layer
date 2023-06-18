@@ -81,6 +81,7 @@ The following table lists the release version of this repo together with the ver
 - `nodejs16.x` (v3.x)
 - `nodejs18.x` (v3.2+)
 
+Note that to use `nodejs18` you will need to build this Layer using the `public.ecr.aws/lambda/nodejs:18` Docker image, as it is not currently possible to get `node18` installed on the standard Amazon Linux 2 distros, see https://github.com/nodesource/distributions/issues/1381
 
 ## Contributions
 If you would like to contribute to this repository, please open an issue or submit a PR.
