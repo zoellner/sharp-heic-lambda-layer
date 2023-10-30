@@ -8,6 +8,7 @@ SHARP_VERSION=0.32.6
 PREFIX_PATH=/opt
 
 export PKG_CONFIG_PATH=$(PREFIX_PATH)/lib/pkgconfig
+export LIBRARY_PATH=$(PREFIX_PATH)/lib:$(PREFIX_PATH)/lib64
 
 build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
@@ -35,7 +36,7 @@ libheif: libde265
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build --prefix $(PREFIX_PATH) && cd build && meson compile && meson test && meson install
+	cd vips-$(VIPS_VERSION) && meson setup build --prefix $(PREFIX_PATH) -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
 
 installLib:
 	dnf groupinstall -y "Development Tools" -x system-rpm-config && \
