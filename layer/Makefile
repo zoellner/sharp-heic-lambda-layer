@@ -35,9 +35,10 @@ libheif: libde265
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
+	cd vips-$(VIPS_VERSION) && meson setup build --prefix $(PREFIX_PATH) && cd build && meson compile && meson test && meson install
 
 installLib:
+	yum groupinstall -y "Development Tools" && \
 	yum install -y \
 		glib2-devel \
 		expat-devel \
@@ -48,4 +49,6 @@ installLib:
 		librsvg2-devel \
 		libtiff-devel \
 		lcms2-devel \
-		cmake
+		cmake \
+		pkgconfig \
+	pip3 install --user meson ninja
