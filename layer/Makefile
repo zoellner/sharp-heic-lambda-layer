@@ -2,8 +2,8 @@
 WEBP_VERSION=1.3.2
 LIBDE265_VERSION=1.0.12
 LIBHEIF_VERSION=1.17.1
-VIPS_VERSION=8.14.5
-SHARP_VERSION=0.32.6
+VIPS_VERSION=8.13.3
+SHARP_VERSION=0.31.0
 
 PREFIX_PATH=/opt
 LIB_PATH=$(PREFIX_PATH)/lib
@@ -35,10 +35,17 @@ libheif: libde265
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
 	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
 
+# libvips install command for latest version
+# libvips: installLib libheif libwebp
+# 	# libvips
+# 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
+# 	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+
 libvips: installLib libheif libwebp
 	# libvips
-	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.gz | tar zx
+	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
+
 
 installLib:
 	dnf groupinstall -y "Development Tools" -x system-rpm-config && \
