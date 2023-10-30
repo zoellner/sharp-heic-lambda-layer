@@ -9,7 +9,7 @@ PREFIX_PATH=/opt
 LIB_PATH=$(PREFIX_PATH)/lib
 
 export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
-export LIBRARY_PATH=$(LIB_PATH)
+export LIBRARY_PATH=$(LIB_PATH):/usr/local/lib64
 
 build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
