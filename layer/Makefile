@@ -6,9 +6,10 @@ VIPS_VERSION=8.14.5
 SHARP_VERSION=0.32.6
 
 PREFIX_PATH=/opt
+LIB_PATH=$(PREFIX_PATH)/lib
 
-export PKG_CONFIG_PATH=$(PREFIX_PATH)/lib/pkgconfig:$(PREFIX_PATH)/lib64/pkgconfig
-export LIBRARY_PATH=$(PREFIX_PATH)/lib:$(PREFIX_PATH)/lib64
+export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
+export LIBRARY_PATH=$(LIB_PATH)
 
 build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
@@ -31,12 +32,12 @@ libde265:
 libheif: libde265
 	# libheif
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
-	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=$(PREFIX_PATH) --preset=release .. && make && make install
+	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
 
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build --prefix $(PREFIX_PATH) -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && DESTDIR=$(LIB_PATH) meson install
 
 installLib:
 	dnf groupinstall -y "Development Tools" -x system-rpm-config && \
