@@ -11,6 +11,10 @@ Parameters:
     Default: account
     Description: An account ID, or * to grant permission to use the layer to all AWS accounts.
     Type: String
+  LayerName:
+    Default: sharp-heic
+    Description: The name of the Lambda Layer that will be created.
+    Type: String
 
 Conditions:
   NoOrganizationId: !Equals [ !Ref OrganizationId, none ]
@@ -20,7 +24,7 @@ Resources:
   SharpHEICLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      LayerName: sharp-heic
+      LayerName: !Ref LayerName
       Description: Sharp Layer with HEIC Support
       ContentUri: ./layer/
       CompatibleRuntimes:
