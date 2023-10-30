@@ -7,7 +7,7 @@ SHARP_VERSION=0.32.6
 
 PREFIX_PATH=/opt
 
-export PKG_CONFIG_PATH=$(PREFIX_PATH)/lib/pkgconfig
+export PKG_CONFIG_PATH=$(PREFIX_PATH)/lib/pkgconfig:$(PREFIX_PATH)/lib64/pkgconfig
 export LIBRARY_PATH=$(PREFIX_PATH)/lib:$(PREFIX_PATH)/lib64
 
 build-SharpHEICLayer: libvips
