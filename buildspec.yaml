@@ -10,8 +10,6 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
-    commands:
-      - pip3 install aws-sam-cli --upgrade --user
   pre_build:
     commands:
       - NODE_ENV=development npm ci
