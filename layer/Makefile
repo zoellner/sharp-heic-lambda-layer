@@ -19,6 +19,7 @@ build-SharpHEICLayer: libvips
 	# extract list with ldd from sharp.node, manipulate a bit with sed to only get the absolute paths, then copy
 	LD_LIBRARY_PATH=$(LIBRARY_PATH) npm --prefix "$(ARTIFACTS_DIR)/nodejs/" install sharp@$(SHARP_VERSION)
 	LD_LIBRARY_PATH=$(LIBRARY_PATH) ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | sed -nE "s/^[^\/\n]*(\/[^ ]+)(.*)/\1/p" | xargs cp -t $(ARTIFACTS_DIR)/lib
+	ls -la $(ARTIFACTS_DIR)/lib
 
 libwebp:
 	curl -L https://github.com/webmproject/libwebp/archive/v$(WEBP_VERSION).tar.gz | tar zx
@@ -37,7 +38,7 @@ libheif: libde265
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && DESTDIR=$(LIB_PATH) meson install
+	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=false -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
 
 installLib:
 	dnf groupinstall -y "Development Tools" -x system-rpm-config && \
