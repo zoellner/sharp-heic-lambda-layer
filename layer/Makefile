@@ -8,6 +8,7 @@ SHARP_VERSION=0.32.6
 PREFIX_PATH=/opt
 
 export PKG_CONFIG_PATH=$(PREFIX_PATH)/lib/pkgconfig
+export PATH := /usr/local/bin:$(PATH) # for cmake
 
 build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
@@ -48,3 +49,4 @@ installLib:
 		librsvg2-devel \
 		libtiff-devel \
 		lcms2-devel
+	export PATH=/usr/local/bin:$PATH
