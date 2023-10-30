@@ -38,11 +38,9 @@ libvips: installLib libheif libwebp
 	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 installLib:
-	yum install -y yum-plugin-ovl && \
 	yum install -y \
 		glib2-devel \
 		expat-devel \
-		libjpeg-devel \
 		libjpeg-turbo-devel \
 		libpng-devel \
 		giflib-devel \
