@@ -38,8 +38,8 @@ libvips: installLib libheif libwebp
 	cd vips-$(VIPS_VERSION) && meson setup build --prefix $(PREFIX_PATH) && cd build && meson compile && meson test && meson install
 
 installLib:
-	yum groupinstall -y "Development Tools" && \
-	yum install -y \
+	dnf groupinstall -y "Development Tools" -x system-rpm-config&& \
+	dnf install -y \
 		glib2-devel \
 		expat-devel \
 		libjpeg-turbo-devel \
@@ -51,4 +51,6 @@ installLib:
 		lcms2-devel \
 		cmake \
 		pkgconfig \
-	pip3 install --user meson ninja
+		meson \
+		ninja-build
+
