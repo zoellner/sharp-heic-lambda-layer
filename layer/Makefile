@@ -2,8 +2,8 @@
 WEBP_VERSION=1.3.2
 LIBDE265_VERSION=1.0.12
 LIBHEIF_VERSION=1.16.2
-VIPS_VERSION=8.14.5
-SHARP_VERSION=0.32.6
+VIPS_VERSION=8.13.3
+SHARP_VERSION=0.31.0
 
 PREFIX_PATH=/opt
 
@@ -34,8 +34,8 @@ libheif: libde265
 
 libvips: installLib libheif libwebp
 	# libvips
-	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=true -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.gz | tar zx
+	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 installLib:
 	yum groupinstall -y "Development Tools" -x system-rpm-config && \
@@ -53,6 +53,4 @@ installLib:
 		lcms2-devel \
 		gobject-introspection-devel \
 		cmake \
-		pkgconfig \
-		meson \
-		ninja-build
+		pkgconfig
