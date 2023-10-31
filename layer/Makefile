@@ -7,9 +7,9 @@ SHARP_VERSION=0.30.7
 
 PREFIX_PATH=/opt
 LIB_PATH=$(PREFIX_PATH)/lib
+LIBRARY_PATH=$(LIB_PATH):/usr/local/lib64
 
 export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
-export LIBRARY_PATH=$(LIB_PATH):/usr/local/lib64
 export LD_LIBRARY_PATH=$(LIB_PATH):/usr/local/lib64:$$LD_LIBRARY_PATH
 
 build-SharpHEICLayer: libvips
@@ -19,9 +19,8 @@ build-SharpHEICLayer: libvips
 	# sharp uses several of the libs we installed or compiled. extract the full list and copy all of those into /opt/lib
 	# extract list with ldd from sharp.node, manipulate a bit to only get the absolute paths, then copy
 
-	LD_LIBRARY_PATH=$(LIBRARY_PATH) npm install --prefix "$(ARTIFACTS_DIR)/nodejs/" --verbose --platform=linux --arch=x64 sharp@$(SHARP_VERSION)
+	npm install --prefix "$(ARTIFACTS_DIR)/nodejs/" --verbose --platform=linux --arch=x64 sharp@$(SHARP_VERSION)
 
-	cp -R $(PREFIX_PATH)/lib/* $(ARTIFACTS_DIR)/lib
 	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | awk 'BEGIN{OFS=" "}{ print $$3 }' | grep '/' | xargs -I '{}' cp '{}' $(ARTIFACTS_DIR)/lib
 
 	# debug logs
