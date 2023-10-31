@@ -1,6 +1,6 @@
 {
   "name": "sharp-heic-lambda-layer",
-  "version": "4.0.0",
+  "version": "3.1.0",
   "description": "Lambda Layer providing sharp with HEIC support",
   "main": "index.js",
   "scripts": {
@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/zoellner/sharp-heic-lambda-layer#readme",
   "engines": {
-    "node": ">=18.0"
+    "node": ">=16.0"
   },
   "devDependencies": {
-    "eslint": "^8.52.0"
+    "eslint": "^8.29.0"
   }
 }

@@ -5,9 +5,9 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 
 ## Prerequisites
 
-* Docker
-* [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
-* Node v18 (for v4.x)
+ * Docker
+ * [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
+ * Node v16 (for v3.x)
 
 ## Usage
 
@@ -15,7 +15,7 @@ Due to potential license concerns for the HEVC patent group, this repo can't be 
 
 But you can compile and deploy this lambda layer yourself at your own risk and use it wihin your own accounts. All you need is an S3 bucket to deploy the compiled code to (replace `your-s3-bucket` in the code snippet below). Please see the note below regarding the build process.
 
-It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below. The base image that should be used is `aws/codebuild/amazonlinux2-x86_64-standard:5.0`.
+It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below. The base image that should be used is `aws/codebuild/amazonlinux2-x86_64-standard:4.0`.
 
 A sample CloudFormation template is provided to setup the CodeBuild project, [sample-buildproject.yaml](sample-buildproject.yaml).
 
@@ -67,21 +67,19 @@ This lambda layer contains the node module [sharp](https://github.com/lovell/sha
 
 ### Dependencies
 The following table lists the release version of this repo together with the version of each dependency. Patch versions are related to the build process or documentation and have the same dependencies as the minor version.
-| release |  sharp | libvips | libheif | libwebp | libde265  | nodejs |
-|---------|--------|---------|---------|---------|-----------|--------|
-|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |     12 |
-|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |     12 |
-|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |     14 |
-|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
-|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
-|   4.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     18 |
-<!-- |   4.0.0 | 0.32.6 |  8.14.5 |  1.17.1 |   1.3.2 |    1.0.12 |     18 | -->
+| release |  sharp | libvips | libheif | libwebp | libde265 | nodejs |
+|---------|--------|---------|---------|---------|----------|--------|
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |     12 |
+|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8 |     12 |
+|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8 |     14 |
+|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
+|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
 - `nodejs14.x` (v2.x)
 - `nodejs16.x` (v3.x)
-- `nodejs18.x` (v4.x)
+
 
 ## Contributions
 If you would like to contribute to this repository, please open an issue or submit a PR.
