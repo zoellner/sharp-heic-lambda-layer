@@ -13,7 +13,7 @@ EXAMPLE_IMAGE_PATH=$(CURDIR)/example-images
 export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
 export LD_LIBRARY_PATH=$(LIB_PATH):$$LD_LIBRARY_PATH
 
-build-SharpHEICLayer:
+build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
 	mkdir -p "$(ARTIFACTS_DIR)/lib"
 
@@ -40,10 +40,10 @@ libheif: libde265
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
 	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
 
-libvips: installLib libheif libwebp
+libvips: installLib
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=true -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=true && cd build && meson compile && meson test && meson install
 
 # libheif: libde265
 # 	# libheif
