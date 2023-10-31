@@ -38,7 +38,6 @@ libvips: installLib libheif libwebp
 	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=true -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
 
 installLib:
-	yum groupinstall -y "Development Tools" -x system-rpm-config && \
 	yum install -y yum-plugin-ovl && \
 	yum install -y \
 		glib2-devel \
@@ -50,9 +49,4 @@ installLib:
 		libexif-devel \
 		librsvg2-devel \
 		libtiff-devel \
-		lcms2-devel \
-		gobject-introspection-devel \
-		cmake \
-		pkgconfig \
-		meson \
-		ninja-build
+		lcms2-devel
