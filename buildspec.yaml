@@ -9,9 +9,8 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 18 # this is the only runtime version in the CodeBuild container
+      nodejs: 16
     commands:
-      - n 16 # switch back to node 16
       - pip3 install aws-sam-cli --upgrade --user
   pre_build:
     commands:
