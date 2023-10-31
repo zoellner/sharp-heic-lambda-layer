@@ -67,13 +67,14 @@ This lambda layer contains the node module [sharp](https://github.com/lovell/sha
 
 ### Dependencies
 The following table lists the release version of this repo together with the version of each dependency. Patch versions are related to the build process or documentation and have the same dependencies as the minor version.
-| release |  sharp | libvips | libheif | libwebp | libde265 | nodejs |
-|---------|--------|---------|---------|---------|----------|--------|
-|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8 |     12 |
-|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8 |     12 |
-|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8 |     14 |
-|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
-|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
+| release |  sharp | libvips | libheif | libwebp | libde265  | nodejs |
+|---------|--------|---------|---------|---------|-----------|--------|
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |     12 |
+|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |     12 |
+|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |     14 |
+|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
+|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
+|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |     16 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
