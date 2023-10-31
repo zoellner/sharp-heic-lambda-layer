@@ -74,12 +74,15 @@ The following table lists the release version of this repo together with the ver
 |   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8 |     14 |
 |   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
 |   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     16 |
+|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8 |     18 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
 - `nodejs14.x` (v2.x)
 - `nodejs16.x` (v3.x)
+- `nodejs18.x` (v3.2+)
 
+Note that to use `nodejs18` you will need to build this Layer using the `public.ecr.aws/lambda/nodejs:18` Docker image, as it is not currently possible to get `node18` installed on the standard Amazon Linux 2 distros, see https://github.com/nodesource/distributions/issues/1381
 
 ## Contributions
 If you would like to contribute to this repository, please open an issue or submit a PR.
