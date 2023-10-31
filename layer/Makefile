@@ -13,19 +13,18 @@ EXAMPLE_IMAGE_PATH=$(CURDIR)/example-images
 export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
 export LD_LIBRARY_PATH=$(LIB_PATH):$$LD_LIBRARY_PATH
 
-build-SharpHEICLayer: libvips
+build-SharpHEICLayer:
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
 	mkdir -p "$(ARTIFACTS_DIR)/lib"
 
 	# sharp uses several of the libs we installed or compiled. extract the full list and copy all of those into $(ARTIFACTS_DIR)/lib
 	# extract list with ldd from sharp.node, manipulate a bit to only get the absolute paths, then copy
 
-	npm install --prefix "$(ARTIFACTS_DIR)/nodejs/" --verbose --platform=linux --arch=x64 sharp@$(SHARP_VERSION)
-
-	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | awk 'BEGIN{OFS=" "}{ print $$3 }' | grep '/' | xargs -I '{}' cp '{}' $(ARTIFACTS_DIR)/lib
+	PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig LD_LIBRARY_PATH=$(LIB_PATH) npm install --prefix "$(ARTIFACTS_DIR)/nodejs/" --verbose --foreground-scripts sharp@$(SHARP_VERSION)
+	PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig LD_LIBRARY_PATH=$(LIB_PATH) ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node | awk 'BEGIN{OFS=" "}{ print $$3 }' | grep '/' | xargs -I '{}' cp '{}' $(ARTIFACTS_DIR)/lib
 
 	# debug logs
-	ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node
+	PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig LD_LIBRARY_PATH=$(LIB_PATH) ldd $(ARTIFACTS_DIR)/nodejs/node_modules/sharp/build/Release/sharp-linux-x64.node
 	ls -la $(ARTIFACTS_DIR)/lib
 
 libwebp:
@@ -75,4 +74,3 @@ installLib:
 		pkgconfig \
 		meson \
 		ninja-build
-
