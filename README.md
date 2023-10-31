@@ -15,7 +15,7 @@ Due to potential license concerns for the HEVC patent group, this repo can't be 
 
 But you can compile and deploy this lambda layer yourself at your own risk and use it wihin your own accounts. All you need is an S3 bucket to deploy the compiled code to (replace `your-s3-bucket` in the code snippet below). Please see the note below regarding the build process.
 
-It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below. The base image that should be used is `aws/codebuild/amazonlinux2-x86_64-standard:4.0`.
+It is recommended to automate this process using AWS CodeBuild. A buildspec file is provided in the repo. In that case you'll have to set the `SAM_BUCKET` environment variable in CodeBuild. For other environment variables see the table below. The base image that should be used is `aws/codebuild/amazonlinux2-x86_64-standard:5.0`.
 
 A sample CloudFormation template is provided to setup the CodeBuild project, [sample-buildproject.yaml](sample-buildproject.yaml).
 

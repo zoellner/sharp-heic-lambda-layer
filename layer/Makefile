@@ -38,9 +38,8 @@ libvips: installLib libheif libwebp
 	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 installLib:
-	yum groupinstall -y "Development Tools" -x system-rpm-config && \
-	yum install -y yum-plugin-ovl && \
-	yum install -y \
+	dnf groupinstall -y "Development Tools" -x system-rpm-config && \
+	dnf install -y \
 		glib2-devel \
 		expat-devel \
 		libjpeg-devel \
@@ -53,4 +52,6 @@ installLib:
 		lcms2-devel \
 		gobject-introspection-devel \
 		cmake \
-		pkgconfig
+		pkgconfig \
+		meson \
+		ninja-build
