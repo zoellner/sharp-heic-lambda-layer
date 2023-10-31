@@ -13,8 +13,6 @@ EXAMPLE_IMAGE_PATH=$(CURDIR)/example-images
 export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig
 export LD_LIBRARY_PATH=$(LIB_PATH):$$LD_LIBRARY_PATH
 
-mkdir -p $(EXAMPLE_IMAGE_PATH)
-
 build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_DIR)/nodejs"
 	mkdir -p "$(ARTIFACTS_DIR)/lib"
@@ -35,7 +33,6 @@ libwebp:
 	cd libwebp-$(WEBP_VERSION) && ./autogen.sh && ./configure --enable-libwebpmux --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 libde265:
-	# libde265
 	curl -L https://github.com/strukturag/libde265/releases/download/v$(LIBDE265_VERSION)/libde265-$(LIBDE265_VERSION).tar.gz | tar zx
 	cd libde265-$(LIBDE265_VERSION) && ./autogen.sh && ./configure --disable-dec265 --disable-sherlock265 --prefix=$(PREFIX_PATH) && make V=0 && make install
 
