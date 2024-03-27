@@ -1,9 +1,9 @@
 # Library Versions
 WEBP_VERSION=1.3.2
-LIBDE265_VERSION=1.0.12
+LIBDE265_VERSION=1.0.15
 LIBHEIF_VERSION=1.12.0
-VIPS_VERSION=8.12.2
-SHARP_VERSION=0.30.7
+VIPS_VERSION=8.15.2
+SHARP_VERSION=0.33.3
 
 PREFIX_PATH=/opt
 
@@ -38,8 +38,7 @@ libvips: installLib libheif libwebp
 	cd vips-$(VIPS_VERSION) && ./configure --prefix=$(PREFIX_PATH) && make V=0 && make install
 
 installLib:
-	yum install -y yum-plugin-ovl && \
-	yum install -y \
+	dnf install -y \
 		glib2-devel \
 		expat-devel \
 		libjpeg-devel \

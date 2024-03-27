@@ -71,3 +71,4 @@ typings/
 .aws-sam
 samconfig.toml
 packaged-template.yaml
+/.idea
