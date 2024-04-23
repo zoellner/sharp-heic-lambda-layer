@@ -7,7 +7,7 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 
 * Docker
 * [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
-* Node v18 (for v4.x)
+* Node v20 (for v4.x)
 
 ## Usage
 
