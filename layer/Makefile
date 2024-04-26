@@ -1,6 +1,7 @@
 # Library Versions
 WEBP_VERSION=1.4.0
 LIBDE265_VERSION=1.0.15
+X265_VERSION=3.6
 LIBHEIF_VERSION=1.17.6
 VIPS_VERSION=8.15.2
 SHARP_VERSION=0.33.3
@@ -41,7 +42,11 @@ libde265:
 	curl -L https://github.com/strukturag/libde265/releases/download/v$(LIBDE265_VERSION)/libde265-$(LIBDE265_VERSION).tar.gz | tar zx
 	cd libde265-$(LIBDE265_VERSION) && ./autogen.sh && ./configure --disable-dec265 --disable-sherlock265 --prefix=$(PREFIX_PATH) && make V=0 && make install
 
-libheif: libde265
+x265:
+	curl -L https://bitbucket.org/multicoreware/x265_git/downloads/x265_$(X265_VERSION).tar.gz | tar zx
+	cd x265_$(X265_VERSION) && cd build/linux && ./make-Makefiles.bash && make
+
+libheif: libde265 x265
 	# libheif
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
 	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
