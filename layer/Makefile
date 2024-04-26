@@ -82,8 +82,6 @@ installLib:
 		lcms2-devel \
 		gobject-introspection-devel \
 		cmake \
-		cmake-curses-gui \
-		build-essential \
 		yasm \
 		pkg-config \
 		meson \
