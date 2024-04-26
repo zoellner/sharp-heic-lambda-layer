@@ -67,15 +67,15 @@ This lambda layer contains the node module [sharp](https://github.com/lovell/sha
 
 ### Dependencies
 The following table lists the release version of this repo together with the version of each dependency. Patch versions are related to the build process or documentation and have the same dependencies as the minor version.
-| release |  sharp | libvips | libheif | libwebp | libde265  | nodejs |
-|---------|--------|---------|---------|---------|-----------|--------|
-|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |     12 |
-|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |     12 |
-|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |     14 |
-|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
-|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |     16 |
-|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |     16 |
-|   4.0.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |     20 |
+| release |  sharp | libvips | libheif | libwebp | libde265  |   x265 | nodejs |
+|---------|--------|---------|---------|---------|-----------|--------|--------|
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |      - |     12 |
+|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |      - |     12 |
+|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |      - |     14 |
+|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |     16 |
+|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |     16 |
+|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |      - |     16 |
+|   4.1.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |     20 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
@@ -90,6 +90,7 @@ You can also use the Sponsor button on the right if you'd like.
 
 ## Licenses
 - libheif and libde265 are distributed under the terms of the GNU Lesser General Public License. Copyright Struktur AG. See https://github.com/strukturag/libheif/blob/master/COPYING and https://github.com/strukturag/libde265/blob/master/COPYING for details.
+- x265 is free to use under the GNU GPL and is also available under a commercial license. See https://www.x265.org/ for details.
 - libwebp is Copyright Google Inc. See https://github.com/webmproject/libwebp/blob/master/COPYING for details.
 - sharp is licensed under the Apache License, Version 2.0. Copyright Lovell Fuller and contributors. See https://github.com/lovell/sharp/blob/master/LICENSE for details.
 - libvips is licensed under the LGPL 2.1+. See https://github.com/libvips/libvips/blob/master/COPYING for details.
