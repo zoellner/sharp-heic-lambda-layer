@@ -44,9 +44,9 @@ libde265:
 
 x265:
 	curl -L https://bitbucket.org/multicoreware/x265_git/downloads/x265_$(X265_VERSION).tar.gz | tar zx
-	cd x265_$(X265_VERSION) && cd build/linux && ./make-Makefiles.bash && make
+	cd x265_$(X265_VERSION) && cd build/linux && ./make-Makefiles.bash && ls -la && ./make
 
-libheif: libde265 x265
+libheif: x265 libde265
 	# libheif
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
 	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
