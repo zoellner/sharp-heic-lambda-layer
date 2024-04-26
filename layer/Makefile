@@ -44,7 +44,7 @@ libde265:
 
 x265:
 	curl -L https://bitbucket.org/multicoreware/x265_git/downloads/x265_$(X265_VERSION).tar.gz | tar zx
-	cd x265_$(X265_VERSION) && cd build/linux && ./make-Makefiles.bash && ls -la && ./make
+	cd x265_$(X265_VERSION) && cd build/linux && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ../../source && make
 
 libheif: x265 libde265
 	# libheif
@@ -82,7 +82,7 @@ installLib:
 		lcms2-devel \
 		gobject-introspection-devel \
 		cmake \
-		yasm \
+		nasm \
 		pkg-config \
 		meson \
 		ninja-build
