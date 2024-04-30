@@ -44,7 +44,7 @@ libde265:
 libheif: libde265
 	# libheif
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
-	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release .. && make && make install
+	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release-noplugins .. && make && make install
 
 libvips: installLib libheif libwebp
 	# libvips
