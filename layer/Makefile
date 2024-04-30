@@ -54,7 +54,7 @@ libheif: x265 libde265
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled --buildtype release && cd build && meson compile && meson test && meson install
+	cd vips-$(VIPS_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled --buildtype release && cd build && meson compile && meson test && meson install
 
 # libheif: libde265
 # 	# libheif
