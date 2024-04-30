@@ -49,12 +49,12 @@ x265:
 libheif: x265 libde265
 	# libheif
 	curl -L https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz | tar zx
-	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release-noplugins .. && make && make install
+	cd libheif-$(LIBHEIF_VERSION) && mkdir build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) --preset=release-noplugins .. && make V=1 && make install
 
 libvips: installLib libheif libwebp
 	# libvips
 	curl -L https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz | tar xJ
-	cd vips-$(VIPS_VERSION) && meson setup build -Dexamples=true -Dheif=enabled -Dlcms=enabled && cd build && meson compile && meson test && meson install
+	cd vips-$(VIPS_VERSION) && meson setup build -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled --buildtype release && cd build && meson compile && meson test && meson install
 
 # libheif: libde265
 # 	# libheif
