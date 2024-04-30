@@ -58,7 +58,7 @@ Resources:
               Pattern: PUSH
               ExcludeMatchedPattern: false
             - Type: HEAD_REF
-              Pattern: '^refs/tags/.*'
+              Pattern: '^refs/tags/.*' # or use ^refs/heads/main to build on push to main branch
               ExcludeMatchedPattern: false
         Webhook: true
       EncryptionKey: !Sub arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/s3
