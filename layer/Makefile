@@ -53,7 +53,7 @@ x265:
 libaom:
 	# libaom
 	curl -L https://storage.googleapis.com/aom-releases/libaom-${LIBAOM_VERSION}.tar.gz | tar zx
-  cd libaom-${LIBAOM_VERSION} && cd build && cmake -DCONFIG_AV1_ENCODER=0 -DBUILD_SHARED_LIBS=1 -DENABLE_TESTS=0 -DENABLE_DOCS=0 -DCMAKE_INSTALL_PREFIX=${PREFIX_PATH} -DCMAKE_INSTALL_LIBDIR=${LIB_PATH}/lib .. && make V=0 && make install
+	cd libaom-${LIBAOM_VERSION} && cd build && cmake -DCONFIG_AV1_ENCODER=0 -DBUILD_SHARED_LIBS=1 -DENABLE_TESTS=0 -DENABLE_DOCS=0 -DCMAKE_INSTALL_PREFIX=${PREFIX_PATH} -DCMAKE_INSTALL_LIBDIR=${LIB_PATH}/lib .. && make V=0 && make install
 
 libheif: x265 libde265 libaom
 	# libheif
