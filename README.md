@@ -61,7 +61,6 @@ Previously, some custom docker images were needed to build this layer. AWS has s
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.
 
-
 ### Layer contents
 This lambda layer contains the node module [sharp](https://github.com/lovell/sharp). But unlike a normal installation via `npm i sharp` this layer does not use the prebuilt sharp and libvips binaries. This layer compiles libwebp, libde265, libheif, libvips, and sharp from source in order to provide HEIC/HEIF (and webp) functionality in an AWS Lambda environment.
 
@@ -77,7 +76,7 @@ The following table lists the release version of this repo together with the ver
 |   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |      - |        |     16 |
 |   4.1.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
 |   4.1.3 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
-|   main  | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |     20 |
+|   4.2.0 | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |     20 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
@@ -96,6 +95,7 @@ You can also use the Sponsor button on the right if you'd like.
 - libwebp is Copyright Google Inc. See https://github.com/webmproject/libwebp/blob/master/COPYING for details.
 - sharp is licensed under the Apache License, Version 2.0. Copyright Lovell Fuller and contributors. See https://github.com/lovell/sharp/blob/master/LICENSE for details.
 - libvips is licensed under the LGPL 2.1+. See https://github.com/libvips/libvips/blob/master/COPYING for details.
+- libaom is subject to the terms of the BSD 2 Clause License and the Alliance for Open Media Patent License 1.0. See https://aomedia.googlesource.com/aom/#license-header
 - The remainder of the code in this repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Related Resources
@@ -107,3 +107,4 @@ Visit [sharp.pixelplumbing.com](https://sharp.pixelplumbing.com/) for complete i
 - [libde265](https://github.com/strukturag/libde265)
 - [libwebp](https://github.com/webmproject/libwebp)
 - [libvips](https://github.com/libvips/libvips)
+- [libaom](https://aomedia.googlesource.com/aom/)
