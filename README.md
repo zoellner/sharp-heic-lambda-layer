@@ -7,7 +7,7 @@ AWS Lambda Layer providing [sharp](https://github.com/lovell/sharp) with HEIC (a
 
 * Docker
 * [SAM v1.33.0 or higher](https://github.com/awsdocs/aws-sam-developer-guide/blob/master/doc_source/serverless-sam-cli-install.md)
-* Node v20 (for v4.x)
+* Node v22 (for v5.x)
 
 ## Usage
 
@@ -77,12 +77,14 @@ The following table lists the release version of this repo together with the ver
 |   4.1.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
 |   4.1.3 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
 |   4.2.0 | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |     20 |
+| upstream | 0.34.0 |  8.16.1 |  1.19.7 |   1.5.0 |   1.0.15 |    4.1 | 3.12.0 |     22 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
 - `nodejs14.x` (v2.x)
 - `nodejs16.x` (v3.x)
 - `nodejs20.x` (v4.x)
+- `nodejs22.x` (upstream)
 
 ## Contributions
 If you would like to contribute to this repository, please open an issue or submit a PR.

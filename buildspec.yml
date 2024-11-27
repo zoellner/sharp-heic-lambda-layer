@@ -9,7 +9,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 22
   pre_build:
     commands:
       - NODE_ENV=development npm ci
@@ -27,4 +27,4 @@ artifacts:
     - .aws-sam/**/*
 cache:
   paths:
-    - '/root/.npm/**/*'
+    - "/root/.npm/**/*"

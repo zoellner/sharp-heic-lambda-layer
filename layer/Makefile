@@ -1,11 +1,11 @@
 # Library Versions
-WEBP_VERSION=1.4.0
+WEBP_VERSION=1.5.0
 LIBDE265_VERSION=1.0.15
-LIBAOM_VERSION=3.10.0
-X265_VERSION=3.6
-LIBHEIF_VERSION=1.18.2
-VIPS_VERSION=8.15.3
-SHARP_VERSION=0.33.5
+LIBAOM_VERSION=3.12.0
+X265_VERSION=4.1
+LIBHEIF_VERSION=1.19.7
+VIPS_VERSION=8.16.1
+SHARP_VERSION=0.34.0
 
 PREFIX_PATH=/usr/local
 LIB_PATH=$(PREFIX_PATH)/lib
@@ -22,8 +22,13 @@ build-SharpHEICLayer: libvips
 	# sharp uses several of the libs we installed or compiled. extract the full list and copy all of those into $(ARTIFACTS_DIR)/lib
 	# extract list with ldd from sharp.node, manipulate a bit to only get the absolute paths, then copy
 
+	export SHARP_FORCE_GLOBAL_LIBVIPS=1
+
 	# install
 	npm install --save --prefix "$(ARTIFACTS_DIR)/nodejs/" node-addon-api node-gyp
+
+	pkg-config --modversion vips-cpp
+
 	npm install --build-from-source --prefix "$(ARTIFACTS_DIR)/nodejs/" --verbose --foreground-scripts --platform=linux --arch=x64 sharp@$(SHARP_VERSION)
 
 	# debug logs
