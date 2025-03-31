@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/zoellner/sharp-heic-lambda-layer#readme",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=22"
   },
   "devDependencies": {
     "eslint": "^9.1.1"

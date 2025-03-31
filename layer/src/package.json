@@ -8,7 +8,7 @@
   "license": "MIT",
   "devDependencies": {},
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=22"
   },
   "dependencies": {
     "sharp": "^0.33.5"
