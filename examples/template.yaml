@@ -8,7 +8,7 @@ Resources:
     Properties:
       CodeUri: ./src/
       Handler: index.handler
-      Runtime: nodejs22.x
+      Runtime: nodejs24.x
       Timeout: 10
       MemorySize: 1024
       Layers:

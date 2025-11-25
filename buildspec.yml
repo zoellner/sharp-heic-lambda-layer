@@ -9,7 +9,7 @@ env:
 phases:
   install:
     runtime-versions:
-      nodejs: 22
+      nodejs: 24
   pre_build:
     commands:
       - NODE_ENV=development npm ci
