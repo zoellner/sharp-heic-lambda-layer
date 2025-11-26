@@ -79,6 +79,7 @@ The following table lists the release version of this repo together with the ver
 |   4.2.0 | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |     20 |
 |   5.0.0 | 0.34.3 |  8.17.1 |  1.20.1 |   1.6.0 |    1.0.16 |    4.1 | 3.12.1 |     22 |
 |   5.1.0 | 0.34.4 |  8.17.2 |  1.20.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     22 |
+| upstream | 0.34.5 | 8.17.3 |  1.20.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     24 |
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
@@ -86,6 +87,7 @@ The following table lists the release version of this repo together with the ver
 - `nodejs16.x` (v3.x)
 - `nodejs20.x` (v4.x)
 - `nodejs22.x` (v5.x)
+- `nodejs24.x` (upstream)
 
 ## Contributions
 If you would like to contribute to this repository, please open an issue or submit a PR.

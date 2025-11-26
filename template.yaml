@@ -28,7 +28,7 @@ Resources:
       Description: Sharp Layer with HEIC Support
       ContentUri: ./layer/
       CompatibleRuntimes:
-        - nodejs22.x
+        - nodejs24.x
       LicenseInfo: "MIT"
       RetentionPolicy: Retain
     Metadata:
