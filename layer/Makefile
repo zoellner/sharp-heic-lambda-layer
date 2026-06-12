@@ -6,6 +6,16 @@ X265_VERSION=4.1
 LIBHEIF_VERSION=1.23.0
 VIPS_VERSION=8.18.3
 SHARP_VERSION=0.35.1
+NODE_ADDON_API_VERSION=8.8.0
+NODE_GYP_VERSION=13.0.0
+
+# SHA256 digests of the pinned source tarballs above. Update together with the versions.
+WEBP_SHA256=93a852c2b3efafee3723efd4636de855b46f9fe1efddd607e1f42f60fc8f2136
+LIBDE265_SHA256=800478f3bf35f0621b14928ceb317579f3e8b23de4bd2aac29b6cb8be962bbd8
+LIBAOM_SHA256=44bf90dbd23e734d50e70a8c41c285193922938bd0d3bc2ee56764d181d55ef5
+X265_SHA256=a31699c6a89806b74b0151e5e6a7df65de4b49050482fe5ebf8a4379d7af8f29
+LIBHEIF_SHA256=4c9182b18897617182eed12ab5eb9f9d855b3aa3a736d6bdb31abc034ec7d393
+VIPS_SHA256=f41285b61bfb495605494f074ca341f7791a1d406e2f157dcea606ef1ae1b146
 
 # CodeBuild medium instances can OOM when libaom compiles with full parallelism.
 BUILD_JOBS ?= 2
@@ -20,6 +30,12 @@ export PKG_CONFIG_PATH=$(LIB_PATH)/pkgconfig:$$PKG_CONFIG_PATH
 export LD_LIBRARY_PATH=$(LIB_PATH):$$LD_LIBRARY_PATH
 
 CURL=curl --fail --location --silent --show-error
+
+# $(call fetch_verify,<output-file>,<url>,<sha256>) — download and verify before extraction
+define fetch_verify
+$(CURL) -o "$(1)" "$(2)"
+echo "$(3)  $(1)" | sha256sum -c -
+endef
 ARTIFACTS_NODEJS_DIR=$(ARTIFACTS_DIR)/nodejs
 ARTIFACTS_LIB_DIR=$(ARTIFACTS_DIR)/lib
 .PHONY: build-SharpHEICLayer clean installLib system-libs verifySystemLibs codec-stack verifyCodecStack verifyLibvips libwebp libde265 x265 libaom libheif libvips
@@ -33,13 +49,13 @@ build-SharpHEICLayer: libvips
 	printf '  sharp=%s\n  libvips=%s\n  libheif=%s\n  libwebp=%s\n  libde265=%s\n  x265=%s\n  libaom=%s\n' "$(SHARP_VERSION)" "$(VIPS_VERSION)" "$(LIBHEIF_VERSION)" "$(WEBP_VERSION)" "$(LIBDE265_VERSION)" "$(X265_VERSION)" "$(LIBAOM_VERSION)"
 
 	@printf '\n==> %s\n' "Installing sharp build prerequisites"
-	npm install --save --prefix "$(ARTIFACTS_NODEJS_DIR)/" node-addon-api node-gyp
+	npm install --save --prefix "$(ARTIFACTS_NODEJS_DIR)/" node-addon-api@$(NODE_ADDON_API_VERSION) node-gyp@$(NODE_GYP_VERSION)
 
 	@printf '\n==> %s\n' "Checking libvips version"
 	pkg-config --modversion vips-cpp
 
 	@printf '\n==> %s\n' "Installing sharp $(SHARP_VERSION)"
-	npm install --save --prefix "$(ARTIFACTS_NODEJS_DIR)/" --verbose sharp@$(SHARP_VERSION)
+	npm install --save --omit=optional --prefix "$(ARTIFACTS_NODEJS_DIR)/" --verbose sharp@$(SHARP_VERSION)
 
 	@printf '\n==> %s\n' "Building sharp $(SHARP_VERSION) from source"
 	SHARP_FORCE_GLOBAL_LIBVIPS=1 npm --prefix "$(ARTIFACTS_NODEJS_DIR)/node_modules/sharp" --loglevel verbose run build
@@ -49,8 +65,8 @@ build-SharpHEICLayer: libvips
 	test -n "$$SHARP_BINARY" || { echo "Unable to locate compiled sharp addon"; exit 1; }; \
 	test -f "$$SHARP_BINARY"; \
 	ldd "$$SHARP_BINARY"; \
-	ldd "$$SHARP_BINARY" | awk '/\// { print $$3 }' | sort -u | tee /tmp/sharp-layer-libs.txt; \
-	while IFS= read -r lib; do cp "$$lib" "$(ARTIFACTS_LIB_DIR)"; done < /tmp/sharp-layer-libs.txt; \
+	ldd "$$SHARP_BINARY" | awk '$$3 ~ /^\// { print $$3 }' | sort -u | tee /tmp/sharp-layer-libs.txt; \
+	while IFS= read -r lib; do cp "$$lib" "$(ARTIFACTS_LIB_DIR)" || exit 1; done < /tmp/sharp-layer-libs.txt; \
 	printf '\n==> %s\n' "Layer artifact summary"; \
 	printf '  sharp binary: %s\n' "$$SHARP_BINARY"; \
 	printf '  copied shared libraries:\n'; \
@@ -65,7 +81,8 @@ verifySystemLibs:
 libwebp:
 	@printf '\n==> %s\n' "Building libwebp $(WEBP_VERSION)"
 	rm -rf "libwebp-$(WEBP_VERSION)"
-	$(CURL) "https://github.com/webmproject/libwebp/archive/v$(WEBP_VERSION).tar.gz" | tar zx
+	$(call fetch_verify,libwebp-$(WEBP_VERSION).tar.gz,https://github.com/webmproject/libwebp/archive/v$(WEBP_VERSION).tar.gz,$(WEBP_SHA256))
+	tar zxf "libwebp-$(WEBP_VERSION).tar.gz"
 	cd libwebp-$(WEBP_VERSION) && ./autogen.sh && ./configure --enable-libwebpmux --prefix=$(PREFIX_PATH) && make V=0 -j$(BUILD_JOBS) && make install
 
 codec-stack: libheif verifyCodecStack
@@ -80,7 +97,8 @@ verifyCodecStack:
 libde265:
 	@printf '\n==> %s\n' "Building libde265 $(LIBDE265_VERSION)"
 	rm -rf "libde265-$(LIBDE265_VERSION)"
-	$(CURL) "https://github.com/strukturag/libde265/releases/download/v$(LIBDE265_VERSION)/libde265-$(LIBDE265_VERSION).tar.gz" | tar zx
+	$(call fetch_verify,libde265-$(LIBDE265_VERSION).tar.gz,https://github.com/strukturag/libde265/releases/download/v$(LIBDE265_VERSION)/libde265-$(LIBDE265_VERSION).tar.gz,$(LIBDE265_SHA256))
+	tar zxf "libde265-$(LIBDE265_VERSION).tar.gz"
 	cd libde265-$(LIBDE265_VERSION) && cmake -S . -B build \
 		-DCMAKE_INSTALL_PREFIX=$(PREFIX_PATH) \
 		-DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) \
@@ -93,13 +111,15 @@ libde265:
 x265:
 	@printf '\n==> %s\n' "Building x265 $(X265_VERSION)"
 	rm -rf "x265_$(X265_VERSION)"
-	$(CURL) "https://bitbucket.org/multicoreware/x265_git/downloads/x265_$(X265_VERSION).tar.gz" | tar zx
+	$(call fetch_verify,x265_$(X265_VERSION).tar.gz,https://bitbucket.org/multicoreware/x265_git/downloads/x265_$(X265_VERSION).tar.gz,$(X265_SHA256))
+	tar zxf "x265_$(X265_VERSION).tar.gz"
 	cd x265_$(X265_VERSION) && cd build/linux && cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(PREFIX_PATH) ../../source && make V=0 -j$(BUILD_JOBS) && make install
 
 libaom:
 	@printf '\n==> %s\n' "Building libaom $(LIBAOM_VERSION)"
 	rm -rf "libaom-$(LIBAOM_VERSION)"
-	$(CURL) "https://storage.googleapis.com/aom-releases/libaom-$(LIBAOM_VERSION).tar.gz" | tar zx
+	$(call fetch_verify,libaom-$(LIBAOM_VERSION).tar.gz,https://storage.googleapis.com/aom-releases/libaom-$(LIBAOM_VERSION).tar.gz,$(LIBAOM_SHA256))
+	tar zxf "libaom-$(LIBAOM_VERSION).tar.gz"
 	cd libaom-${LIBAOM_VERSION} && cmake -S . -B build \
 		-DCONFIG_AV1_ENCODER=1 \
 		-DBUILD_SHARED_LIBS=1 \
@@ -115,13 +135,15 @@ libaom:
 libheif: x265 libde265 libaom
 	@printf '\n==> %s\n' "Building libheif $(LIBHEIF_VERSION)"
 	rm -rf "libheif-$(LIBHEIF_VERSION)"
-	$(CURL) "https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz" | tar zx
+	$(call fetch_verify,libheif-$(LIBHEIF_VERSION).tar.gz,https://github.com/strukturag/libheif/releases/download/v$(LIBHEIF_VERSION)/libheif-$(LIBHEIF_VERSION).tar.gz,$(LIBHEIF_SHA256))
+	tar zxf "libheif-$(LIBHEIF_VERSION).tar.gz"
 	cd libheif-$(LIBHEIF_VERSION) && mkdir -p build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) -DWITH_EXAMPLES=OFF --preset=release-noplugins .. && make V=0 -j$(BUILD_JOBS) && make install
 
 libvips: system-libs codec-stack libwebp
 	@printf '\n==> %s\n' "Building libvips $(VIPS_VERSION)"
 	rm -rf "vips-$(VIPS_VERSION)"
-	$(CURL) "https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz" | tar xJ
+	$(call fetch_verify,vips-$(VIPS_VERSION).tar.xz,https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz,$(VIPS_SHA256))
+	tar xJf "vips-$(VIPS_VERSION).tar.xz"
 	cd vips-$(VIPS_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled --buildtype release && meson compile -C build -j $(BUILD_JOBS) && meson install -C build
 	$(MAKE) verifyLibvips
 
@@ -165,11 +187,11 @@ installLib:
 clean:
 	@printf '\n==> %s\n' "Removing downloaded source directories"
 	rm -rf \
-		"libwebp-$(WEBP_VERSION)" \
-		"libde265-$(LIBDE265_VERSION)" \
-		"x265_$(X265_VERSION)" \
-		"libaom-$(LIBAOM_VERSION)" \
-		"libheif-$(LIBHEIF_VERSION)" \
-		"vips-$(VIPS_VERSION)"
+		"libwebp-$(WEBP_VERSION)" "libwebp-$(WEBP_VERSION).tar.gz" \
+		"libde265-$(LIBDE265_VERSION)" "libde265-$(LIBDE265_VERSION).tar.gz" \
+		"x265_$(X265_VERSION)" "x265_$(X265_VERSION).tar.gz" \
+		"libaom-$(LIBAOM_VERSION)" "libaom-$(LIBAOM_VERSION).tar.gz" \
+		"libheif-$(LIBHEIF_VERSION)" "libheif-$(LIBHEIF_VERSION).tar.gz" \
+		"vips-$(VIPS_VERSION)" "vips-$(VIPS_VERSION).tar.xz"
 	if [ -n "$(ARTIFACTS_DIR)" ]; then rm -rf "$(ARTIFACTS_DIR)/nodejs" "$(ARTIFACTS_DIR)/lib"; fi
 
