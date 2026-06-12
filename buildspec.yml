@@ -10,17 +10,34 @@ phases:
   install:
     runtime-versions:
       nodejs: 24
+    commands:
+      - 'echo "==> Install phase: tool versions"'
+      - node --version
+      - npm --version
+      - sam --version
+      - bash -c 'if command -v docker >/dev/null 2>&1; then docker --version; else echo "Docker CLI not available in this environment"; fi'
   pre_build:
     commands:
+      - 'echo "==> Pre-build phase: environment"'
+      - echo "NODE_ENV=${NODE_ENV}"
+      - echo "AWS_REGION=${AWS_REGION:-unset}"
+      - echo "STACK_NAME=${STACK_NAME:-sharp-heic-lambda-layer}"
+      - echo "LAYER_NAME=${LAYER_NAME:-sharp-heic}"
+      - 'echo "==> Pre-build phase: install dependencies"'
       - NODE_ENV=development npm ci
+      - 'echo "==> Pre-build phase: audit dependencies"'
       - npm audit --audit-level=moderate
+      - 'echo "==> Pre-build phase: lint"'
       - npm run lint
   build:
     commands:
+      - 'echo "==> Build phase: sam build"'
       - npm run build
   post_build:
     commands:
-      - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi" # check if build was successful. exit otherwise.
+      - 'echo "==> Post-build phase: build status check"'
+      - bash -c 'if [ "$CODEBUILD_BUILD_SUCCEEDING" = "0" ]; then echo "Build failed before deploy; skipping deploy."; if [ -d .aws-sam ]; then echo "Existing .aws-sam contents:"; ls -la .aws-sam; fi; exit 1; fi'
+      - 'echo "==> Post-build phase: sam deploy"'
       - npm run deploy
 artifacts:
   files:
