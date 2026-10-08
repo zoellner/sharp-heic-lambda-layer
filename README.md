@@ -85,6 +85,10 @@ The following table lists the release version of this repo together with the ver
 |   5.1.0 | 0.34.4 |  8.17.2 |  1.20.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     22 |
 |   6.0.0 | 0.34.5 |  8.17.3 |  1.21.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     24 |
 |   6.1.0 | 0.35.1 |  8.18.3 |  1.23.0 |   1.6.0 |    1.0.18 |    4.1 | 3.14.1 |     24 |
+|   6.2.0 | 0.35.5 |  8.18.7 |  1.23.6 |   1.6.0 |    1.1.3  |    4.2 | 3.15.1 |     24 |
+
+### Note regarding HEIF security limits
+`libvips` 8.18.3 and earlier cap `libheif`'s `max_items` at 16 when loading HEIF/HEIC files. Many files written by recent phone cameras exceed this (for example `iinf`, `iref` and `ipma` boxes with 20 to 50 entries) and fail to load with `Security limit exceeded`. `libvips` 8.18.4 raised these limits, and `sharp` 0.35.5 requires `libvips` 8.18.7 or later, so the layer no longer needs any patching to load these files.
 
 ### CompatibleRuntimes
 - `nodejs12.x` (v1.x)
