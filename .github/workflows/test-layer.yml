@@ -28,6 +28,8 @@ jobs:
           node-version: 24
       - run: npm test
 
+  # The compiled layer must not be published (codec licensing), so it is never uploaded as an
+  # artifact or cached; it only exists on the ephemeral runner for the duration of this job.
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -47,13 +49,6 @@ jobs:
       # so the CodeBuild-oriented parallelism limits can be raised.
       - name: Build layer
         run: sam build --use-container --container-env-var BUILD_JOBS=4 --container-env-var LIBAOM_BUILD_JOBS=2
-
-      - name: Upload layer
-        uses: actions/upload-artifact@v7
-        with:
-          name: sharp-heic-layer-x86_64
-          path: .aws-sam/build/SharpHEICLayer
-          retention-days: 7
 
       # The Lambda runtime image has no build toolchain or -devel packages, so any shared library
       # missing from the layer's lib/ directory fails here.
