@@ -111,6 +111,7 @@ test('resizes HEIC to WebP', async () => {
 
 for (const { compression, encoder, options } of [
   // sharp defaults to tune 'auto', which libheif's x265 plugin rejects (only psnr, ssim, grain, fastdecode).
+  // https://github.com/lovell/sharp/issues/4621
   { compression: 'hevc', encoder: 'x265', options: { tune: 'ssim' } },
   { compression: 'av1', encoder: 'libaom', options: {} },
 ]) {
