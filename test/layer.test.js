@@ -41,7 +41,10 @@ test('sharp uses the libvips built for the layer', () => {
   const { version } = JSON.parse(fs.readFileSync(path.join(LAYER_NODE_MODULES, 'sharp/package.json'), 'utf8'));
   assert.equal(version, process.env.EXPECTED_SHARP_VERSION);
   assert.equal(sharp.versions.vips, process.env.EXPECTED_VIPS_VERSION);
-  assert.ok(!fs.existsSync(path.join(LAYER_NODE_MODULES, '@img')), 'prebuilt @img/sharp-* packages must not be bundled');
+  // @img/colour is a regular JS dependency; only the prebuilt @img/sharp-* binaries must be absent.
+  const scope = path.join(LAYER_NODE_MODULES, '@img');
+  const prebuilt = fs.existsSync(scope) ? fs.readdirSync(scope).filter((name) => name.startsWith('sharp-')) : [];
+  assert.deepEqual(prebuilt, [], 'prebuilt @img/sharp-* packages must not be bundled');
 });
 
 test('sharp reports HEIF and WebP support', () => {
