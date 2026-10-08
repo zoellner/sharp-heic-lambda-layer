@@ -59,7 +59,7 @@ The environment variables are used to create a `samconfig.toml` file that config
 Previously, some custom docker images were needed to build this layer. AWS now publishes managed SAM build images for current Lambda runtimes, including `public.ecr.aws/sam/build-nodejs24.x`.
 
 ### Testing
-The [Test layer](.github/workflows/test-layer.yml) workflow builds the layer with `sam build --use-container` and mounts the result at `/opt` in the `public.ecr.aws/lambda/nodejs:24` runtime image. There it runs [test/layer.test.js](test/layer.test.js), which checks shared library resolution, the libvips and sharp versions, HEIC decoding, WebP resizing, and HEIF encoding with both HEVC and AV1. It also invokes the [example function](examples/src/index.js) through the Lambda Runtime Interface Emulator.
+The [Test layer](.github/workflows/test-layer.yml) workflow builds the layer with `sam build --use-container` and mounts the result at `/opt` in the `public.ecr.aws/lambda/nodejs:24` runtime image. There it runs [test/layer.test.js](test/layer.test.js), which checks shared library resolution, the libvips and sharp versions, HEIC decoding, WebP resizing, and HEIF encoding with both HEVC and AV1. Pixel colours are verified against [test/fixtures/quadrants.heic](test/fixtures/quadrants.heic), a synthetic image encoded with macOS `sips` (regenerate with `node test/fixtures/make-quadrants-heic.js`). It also invokes the [example function](examples/src/index.js) through the Lambda Runtime Interface Emulator.
 
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.

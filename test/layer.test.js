@@ -11,6 +11,24 @@ const TEST_IMAGE = path.resolve(__dirname, '../examples/src/test-input.heic');
 const TEST_IMAGE_WIDTH = 3024;
 const TEST_IMAGE_HEIGHT = 4032;
 
+// Synthetic HEIC with one solid colour per quadrant, see test/fixtures/make-quadrants-heic.js.
+const QUADRANTS_IMAGE = path.resolve(__dirname, 'fixtures/quadrants.heic');
+const QUADRANTS_LAYOUT = require('./fixtures/quadrants.js');
+
+// Samples the centre of each quadrant, which also catches flipped or rotated output.
+const assertQuadrantColours = async (input, tolerance) => {
+  const sharp = require('sharp');
+  const { data, info } = await sharp(input).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (const { name, x, y, rgb } of QUADRANTS_LAYOUT.QUADRANTS) {
+    const cx = Math.floor((x + 0.5) * info.width / 2);
+    const cy = Math.floor((y + 0.5) * info.height / 2);
+    const i = (cy * info.width + cx) * info.channels;
+    const actual = [data[i], data[i + 1], data[i + 2]];
+    const ok = actual.every((value, c) => Math.abs(value - rgb[c]) <= tolerance);
+    assert.ok(ok, `${name}: expected ${rgb} ±${tolerance}, got ${actual}`);
+  }
+};
+
 const findSharpBinary = (dir) => {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
@@ -64,6 +82,25 @@ test('decodes HEIC input', async () => {
   assert.equal(metadata.height, TEST_IMAGE_HEIGHT);
 });
 
+test('decodes synthetic HEIC with correct dimensions and colours', async () => {
+  const sharp = require('sharp');
+  const metadata = await sharp(QUADRANTS_IMAGE).metadata();
+  assert.equal(metadata.format, 'heif');
+  assert.equal(metadata.compression, 'hevc');
+  assert.equal(metadata.width, QUADRANTS_LAYOUT.WIDTH);
+  assert.equal(metadata.height, QUADRANTS_LAYOUT.HEIGHT);
+  await assertQuadrantColours(QUADRANTS_IMAGE, 8);
+});
+
+test('resizes synthetic HEIC to WebP with correct colours', async () => {
+  const sharp = require('sharp');
+  const { data, info } = await sharp(QUADRANTS_IMAGE).resize({ width: 240 }).webp().toBuffer({ resolveWithObject: true });
+  assert.equal(info.format, 'webp');
+  assert.equal(info.width, 240);
+  assert.equal(info.height, 160);
+  await assertQuadrantColours(data, 12);
+});
+
 test('resizes HEIC to WebP', async () => {
   const sharp = require('sharp');
   const { info } = await sharp(TEST_IMAGE).resize({ width: 200 }).webp().toBuffer({ resolveWithObject: true });
@@ -79,13 +116,12 @@ for (const { compression, encoder, options } of [
 ]) {
   test(`encodes and decodes HEIF with ${compression} (${encoder})`, async () => {
     const sharp = require('sharp');
-    const encoded = await sharp(TEST_IMAGE).resize({ width: 320 }).heif({ compression, quality: 50, ...options }).toBuffer();
+    const encoded = await sharp(QUADRANTS_IMAGE).heif({ compression, quality: 80, ...options }).toBuffer();
     const metadata = await sharp(encoded).metadata();
     assert.equal(metadata.format, 'heif');
     assert.equal(metadata.compression, compression);
-    assert.equal(metadata.width, 320);
-
-    const { info } = await sharp(encoded).png().toBuffer({ resolveWithObject: true });
-    assert.equal(info.width, 320);
+    assert.equal(metadata.width, QUADRANTS_LAYOUT.WIDTH);
+    assert.equal(metadata.height, QUADRANTS_LAYOUT.HEIGHT);
+    await assertQuadrantColours(encoded, 12);
   });
 }

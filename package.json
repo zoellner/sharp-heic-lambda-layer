@@ -4,7 +4,7 @@
   "description": "Lambda Layer providing sharp with HEIC support",
   "main": "index.js",
   "scripts": {
-    "test": "node --check deployment/createSAMConfiguration.js && node --check examples/src/index.js && node --check test/layer.test.js",
+    "test": "node --check deployment/createSAMConfiguration.js && node --check examples/src/index.js && node --check test/layer.test.js && node --check test/fixtures/quadrants.js && node --check test/fixtures/make-quadrants-heic.js",
     "build": "sam build",
     "prepackage": "node deployment/createSAMConfiguration.js > samconfig.toml",
     "package": "sam package",
