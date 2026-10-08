@@ -1,0 +1,92 @@
+name: Test layer
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  SAM_CLI_TELEMETRY: 0
+  LAMBDA_IMAGE: public.ecr.aws/lambda/nodejs:24
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Read pinned versions
+        run: |
+          echo "EXPECTED_SHARP_VERSION=$(sed -n 's/^SHARP_VERSION=//p' layer/Makefile)" >> "$GITHUB_ENV"
+          echo "EXPECTED_VIPS_VERSION=$(sed -n 's/^VIPS_VERSION=//p' layer/Makefile)" >> "$GITHUB_ENV"
+
+      # Same build image as the documented CodeBuild/SAM path. GitHub runners have 4 vCPUs / 16 GB,
+      # so the CodeBuild-oriented parallelism limits can be raised.
+      - name: Build layer
+        run: sam build --use-container --container-env-var BUILD_JOBS=4 --container-env-var LIBAOM_BUILD_JOBS=2
+
+      - name: Upload layer
+        uses: actions/upload-artifact@v4
+        with:
+          name: sharp-heic-layer-x86_64
+          path: .aws-sam/build/SharpHEICLayer
+          retention-days: 7
+
+      # The Lambda runtime image has no build toolchain or -devel packages, so any shared library
+      # missing from the layer's lib/ directory fails here.
+      - name: Test layer in Lambda runtime image
+        run: |
+          docker run --rm \
+            --entrypoint /var/lang/bin/node \
+            -v "$PWD/.aws-sam/build/SharpHEICLayer:/opt:ro" \
+            -v "$PWD:/work:ro" \
+            -e NODE_PATH=/opt/nodejs/node_modules \
+            -e LD_LIBRARY_PATH=/var/lang/lib:/lib64:/usr/lib64:/var/runtime:/var/runtime/lib:/var/task:/var/task/lib:/opt/lib \
+            -e EXPECTED_SHARP_VERSION -e EXPECTED_VIPS_VERSION \
+            "$LAMBDA_IMAGE" --test /work/test/layer.test.js
+
+      - name: Invoke example function via Lambda Runtime Interface Emulator
+        run: |
+          docker run -d --name lambda -p 9000:8080 \
+            -v "$PWD/.aws-sam/build/SharpHEICLayer:/opt:ro" \
+            -v "$PWD/examples/src:/var/task:ro" \
+            "$LAMBDA_IMAGE" index.handler
+          curl --silent --show-error --fail --retry 10 --retry-connrefused --retry-delay 1 \
+            -d '{}' http://localhost:9000/2015-03-31/functions/function/invocations > response.json
+          node -e '
+            const res = JSON.parse(require("fs").readFileSync("response.json", "utf8"));
+            if (res.statusCode !== 200) throw new Error("unexpected response: " + JSON.stringify(res).slice(0, 500));
+            if (res.headers["content-type"] !== "image/webp") throw new Error("unexpected content-type " + res.headers["content-type"]);
+            const body = Buffer.from(res.body, "base64");
+            if (body.toString("ascii", 0, 4) !== "RIFF" || body.toString("ascii", 8, 12) !== "WEBP") throw new Error("body is not a WebP image");
+            console.log("Lambda returned a WebP image of " + body.length + " bytes");
+          '
+
+      - name: Lambda container logs
+        if: always()
+        run: docker logs lambda 2>&1 || true
