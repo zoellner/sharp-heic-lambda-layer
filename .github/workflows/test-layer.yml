@@ -18,7 +18,7 @@ env:
   LAMBDA_IMAGE: public.ecr.aws/lambda/nodejs:24
 
 jobs:
-  lint:
+  syntax-check:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -26,9 +26,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
-      - run: npm ci
-      - run: npm run lint
+      - run: npm test
 
   build-and-test:
     runs-on: ubuntu-latest

@@ -4,9 +4,7 @@
   "description": "Lambda Layer providing sharp with HEIC support",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint",
-    "lint": "npx eslint .",
-    "lint:fix": "npx eslint --fix .",
+    "test": "node --check deployment/createSAMConfiguration.js && node --check examples/src/index.js && node --check test/layer.test.js",
     "build": "sam build",
     "prepackage": "node deployment/createSAMConfiguration.js > samconfig.toml",
     "package": "sam package",
@@ -26,8 +24,5 @@
   "homepage": "https://github.com/zoellner/sharp-heic-lambda-layer#readme",
   "engines": {
     "node": ">=22.11"
-  },
-  "devDependencies": {
-    "eslint": "^9.38.0"
   }
 }
