@@ -8,8 +8,8 @@ const { test } = require('node:test');
 
 const LAYER_NODE_MODULES = '/opt/nodejs/node_modules';
 const TEST_IMAGE = path.resolve(__dirname, '../examples/src/test-input.heic');
-const TEST_IMAGE_WIDTH = 4032;
-const TEST_IMAGE_HEIGHT = 3024;
+const TEST_IMAGE_WIDTH = 3024;
+const TEST_IMAGE_HEIGHT = 4032;
 
 const findSharpBinary = (dir) => {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -38,7 +38,8 @@ test('compiled sharp addon resolves all shared libraries', () => {
 
 test('sharp uses the libvips built for the layer', () => {
   const sharp = require('sharp');
-  assert.equal(require('sharp/package.json').version, process.env.EXPECTED_SHARP_VERSION);
+  const { version } = JSON.parse(fs.readFileSync(path.join(LAYER_NODE_MODULES, 'sharp/package.json'), 'utf8'));
+  assert.equal(version, process.env.EXPECTED_SHARP_VERSION);
   assert.equal(sharp.versions.vips, process.env.EXPECTED_VIPS_VERSION);
   assert.ok(!fs.existsSync(path.join(LAYER_NODE_MODULES, '@img')), 'prebuilt @img/sharp-* packages must not be bundled');
 });
@@ -68,13 +69,14 @@ test('resizes HEIC to WebP', async () => {
   assert.equal(info.height, Math.round(200 * TEST_IMAGE_HEIGHT / TEST_IMAGE_WIDTH));
 });
 
-for (const { compression, encoder } of [
-  { compression: 'hevc', encoder: 'x265' },
-  { compression: 'av1', encoder: 'libaom' },
+for (const { compression, encoder, options } of [
+  // sharp defaults to tune 'auto', which libheif's x265 plugin rejects (only psnr, ssim, grain, fastdecode).
+  { compression: 'hevc', encoder: 'x265', options: { tune: 'ssim' } },
+  { compression: 'av1', encoder: 'libaom', options: {} },
 ]) {
   test(`encodes and decodes HEIF with ${compression} (${encoder})`, async () => {
     const sharp = require('sharp');
-    const encoded = await sharp(TEST_IMAGE).resize({ width: 320 }).heif({ compression, quality: 50 }).toBuffer();
+    const encoded = await sharp(TEST_IMAGE).resize({ width: 320 }).heif({ compression, quality: 50, ...options }).toBuffer();
     const metadata = await sharp(encoded).metadata();
     assert.equal(metadata.format, 'heif');
     assert.equal(metadata.compression, compression);
