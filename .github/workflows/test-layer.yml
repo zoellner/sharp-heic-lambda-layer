@@ -28,9 +28,37 @@ jobs:
           node-version: 24
       - run: npm test
 
+  # Decides whether the layer needs to be rebuilt. The workflow itself always runs because its jobs
+  # are required checks; a job skipped via `if` counts as passing, a workflow that never starts does not.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      layer: ${{ steps.filter.outputs.layer }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: filter
+        env:
+          BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] || ! git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            echo "layer=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-only "$BASE_SHA" "$GITHUB_SHA" | tee changed-files.txt
+          if grep -qE '^(layer/|test/|examples/src/|template\.yaml$|\.github/workflows/test-layer\.yml$)' changed-files.txt; then
+            echo "layer=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "layer=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # The compiled layer must not be published (codec licensing), so it is never uploaded as an
   # artifact or cached; it only exists on the ephemeral runner for the duration of this job.
   build-and-test:
+    needs: changes
+    if: needs.changes.outputs.layer == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
