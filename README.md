@@ -35,6 +35,7 @@ sam deploy --guided
 ### Lambda Layer
 - Add the lambda layer with ARN `arn:aws:lambda:us-east-1:${AWS:AccountId}:layer:sharp-heic:${LAYER_VERSION}` to any lambda function (replace `${LAYER_VERSION}` with the appropriate version and `${AWS:AccountId}` if you're not using a layer from the same account as the function). You can also import the layer ARN using `!ImportValue SharpHEICLayerArn`.
 - Remove sharp from the dependencies in the function code (it will otherwise conflict with the one provided through the layer)
+- When encoding HEIC (`heif({ compression: 'hevc' })`), pass `tune: 'ssim'` or `tune: 'psnr'`. sharp's default `tune: 'auto'` is rejected by the x265 encoder with `heif: Invalid parameter value (5.2006)`, see [lovell/sharp#4621](https://github.com/lovell/sharp/issues/4621). AVIF (`compression: 'av1'`) is not affected.
 - See [example template](examples/sam-template.yaml) for a complete sample template.
 
 ### Environment Variables for build
@@ -57,6 +58,9 @@ The environment variables are used to create a `samconfig.toml` file that config
 
 ### Note regarding build process
 Previously, some custom docker images were needed to build this layer. AWS now publishes managed SAM build images for current Lambda runtimes, including `public.ecr.aws/sam/build-nodejs24.x`.
+
+### Testing
+The [Test layer](.github/workflows/test-layer.yml) workflow builds the layer with `sam build --use-container` and mounts the result at `/opt` in the `public.ecr.aws/lambda/nodejs:24` runtime image. There it runs [test/layer.test.js](test/layer.test.js), which checks shared library resolution, the libvips and sharp versions, HEIC decoding, WebP resizing, and HEIF encoding with both HEVC and AV1. Pixel colours are verified against [test/fixtures/quadrants.heic](test/fixtures/quadrants.heic), a synthetic image encoded with macOS `sips` (regenerate with `node test/fixtures/make-quadrants-heic.js`). The layer is only rebuilt when `layer/`, `test/`, `examples/src/`, `template.yaml` or the workflow itself change; for other changes (e.g. documentation) the build job is skipped. It also invokes the [example function](examples/src/index.js) through the Lambda Runtime Interface Emulator.
 
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.

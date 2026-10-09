@@ -27,8 +27,8 @@ phases:
       - NODE_ENV=development npm ci
       - 'echo "==> Pre-build phase: audit dependencies"'
       - npm audit --audit-level=moderate
-      - 'echo "==> Pre-build phase: lint"'
-      - npm run lint
+      - 'echo "==> Pre-build phase: syntax check"'
+      - npm test
   build:
     commands:
       - 'echo "==> Build phase: sam build"'
