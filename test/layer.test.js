@@ -65,9 +65,9 @@ test('sharp uses the libvips built for the layer', () => {
   assert.deepEqual(prebuilt, [], 'prebuilt @img/sharp-* packages must not be bundled');
 });
 
-test('sharp reports HEIF and WebP support', () => {
+test('sharp reports HEIF, WebP and GIF support', () => {
   const { format } = require('sharp');
-  for (const name of ['heif', 'webp', 'jpeg', 'png']) {
+  for (const name of ['heif', 'webp', 'jpeg', 'png', 'gif']) {
     assert.ok(format[name].input.buffer, `${name} input`);
     assert.ok(format[name].output.buffer, `${name} output`);
   }
@@ -99,6 +99,51 @@ test('resizes synthetic HEIC to WebP with correct colours', async () => {
   assert.equal(info.width, 240);
   assert.equal(info.height, 160);
   await assertQuadrantColours(data, 12);
+});
+
+// GIF output needs cgif and an image quantiser (libimagequant) in libvips, see #13.
+test('resizes synthetic HEIC to GIF with correct colours', async () => {
+  const sharp = require('sharp');
+  const { data, info } = await sharp(QUADRANTS_IMAGE).resize({ width: 240 }).gif().toBuffer({ resolveWithObject: true });
+  assert.equal(info.format, 'gif');
+  assert.equal(info.width, 240);
+  assert.equal(info.height, 160);
+  assert.equal(data.toString('ascii', 0, 6), 'GIF89a');
+  await assertQuadrantColours(data, 12);
+});
+
+test('encodes and resizes animated GIF', async () => {
+  const sharp = require('sharp');
+  const frames = await Promise.all([
+    sharp(QUADRANTS_IMAGE).png().toBuffer(),
+    sharp(QUADRANTS_IMAGE).flop().png().toBuffer(),
+  ]);
+  const animated = await sharp(frames, { join: { animated: true } }).gif({ delay: 100, loop: 0 }).toBuffer();
+  // Same pipeline as #13: load all frames, resize, keep the GIF format.
+  const resized = await sharp(animated, { animated: true }).resize({ width: 240 }).gif().toBuffer();
+  const metadata = await sharp(resized).metadata();
+  assert.equal(metadata.format, 'gif');
+  assert.equal(metadata.pages, 2);
+  assert.equal(metadata.width, 240);
+  assert.equal(metadata.height, 160);
+  await assertQuadrantColours(resized, 12);
+  // The second frame is mirrored, flopping it back must restore the original layout.
+  await assertQuadrantColours(await sharp(resized, { page: 1 }).flop().png().toBuffer(), 12);
+});
+
+// Without a quantiser libvips only warns and silently writes a truecolour PNG, so check the
+// colour type in the IHDR chunk (byte 25, 3 = indexed colour) rather than just the call succeeding.
+test('encodes palette PNG', async () => {
+  const sharp = require('sharp');
+  const encoded = await sharp(QUADRANTS_IMAGE).png({ palette: true }).toBuffer();
+  assert.equal(encoded.toString('ascii', 12, 16), 'IHDR');
+  assert.equal(encoded[25], 3, 'PNG colour type should be indexed');
+  const metadata = await sharp(encoded).metadata();
+  assert.equal(metadata.format, 'png');
+  assert.equal(metadata.isPalette, true);
+  assert.equal(metadata.width, QUADRANTS_LAYOUT.WIDTH);
+  assert.equal(metadata.height, QUADRANTS_LAYOUT.HEIGHT);
+  await assertQuadrantColours(encoded, 12);
 });
 
 test('resizes HEIC to WebP', async () => {

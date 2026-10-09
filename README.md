@@ -60,13 +60,13 @@ The environment variables are used to create a `samconfig.toml` file that config
 Previously, some custom docker images were needed to build this layer. AWS now publishes managed SAM build images for current Lambda runtimes, including `public.ecr.aws/sam/build-nodejs24.x`.
 
 ### Testing
-The [Test layer](.github/workflows/test-layer.yml) workflow builds the layer with `sam build --use-container` and mounts the result at `/opt` in the `public.ecr.aws/lambda/nodejs:24` runtime image. There it runs [test/layer.test.js](test/layer.test.js), which checks shared library resolution, the libvips and sharp versions, HEIC decoding, WebP resizing, and HEIF encoding with both HEVC and AV1. Pixel colours are verified against [test/fixtures/quadrants.heic](test/fixtures/quadrants.heic), a synthetic image encoded with macOS `sips` (regenerate with `node test/fixtures/make-quadrants-heic.js`). The layer is only rebuilt when `layer/`, `test/`, `examples/src/`, `template.yaml` or the workflow itself change; for other changes (e.g. documentation) the build job is skipped. It also invokes the [example function](examples/src/index.js) through the Lambda Runtime Interface Emulator.
+The [Test layer](.github/workflows/test-layer.yml) workflow builds the layer with `sam build --use-container` and mounts the result at `/opt` in the `public.ecr.aws/lambda/nodejs:24` runtime image. There it runs [test/layer.test.js](test/layer.test.js), which checks shared library resolution, the libvips and sharp versions, HEIC decoding, WebP resizing, HEIF encoding with both HEVC and AV1, static and animated GIF output, and palette PNG output. Pixel colours are verified against [test/fixtures/quadrants.heic](test/fixtures/quadrants.heic), a synthetic image encoded with macOS `sips` (regenerate with `node test/fixtures/make-quadrants-heic.js`). The layer is only rebuilt when `layer/`, `test/`, `examples/src/`, `template.yaml` or the workflow itself change; for other changes (e.g. documentation) the build job is skipped. It also invokes the [example function](examples/src/index.js) through the Lambda Runtime Interface Emulator.
 
 ## Background
 This repo exists as it is rather painful to compile all libraries required to get sharp to work with HEIC/HEIF files in an AWS Lambda environment. The sharp repository has several [issues](https://github.com/lovell/sharp/issues) related to this.
 
 ### Layer contents
-This lambda layer contains the node module [sharp](https://github.com/lovell/sharp). But unlike a normal installation via `npm i sharp` this layer does not use the prebuilt sharp and libvips binaries. This layer compiles libwebp, libde265, x265, libaom, libheif, and libvips from source, then explicitly runs `sharp`'s build script against that global libvips installation in order to provide HEIC/HEIF (and WebP) functionality in an AWS Lambda environment.
+This lambda layer contains the node module [sharp](https://github.com/lovell/sharp). But unlike a normal installation via `npm i sharp` this layer does not use the prebuilt sharp and libvips binaries. This layer compiles libwebp, libde265, x265, libaom, libheif, libimagequant, cgif, and libvips from source, then explicitly runs `sharp`'s build script against that global libvips installation in order to provide HEIC/HEIF (and WebP) functionality in an AWS Lambda environment.
 
 As of `sharp@0.35.1`, building from source is no longer triggered automatically during `npm install`, so the layer build now installs the package first and then runs `sharp`'s build script against the custom `libvips` installation.
 
@@ -74,22 +74,26 @@ The native build is intentionally pinned end-to-end so the layer uses the versio
 
 ### Dependencies
 The following table lists the release version of this repo together with the version of each dependency. Patch versions are related to the build process or documentation and have the same dependencies as the minor version.
-| release |  sharp | libvips | libheif | libwebp | libde265  |   x265 | libaom | nodejs |
-|---------|--------|---------|---------|---------|-----------|--------|--------|--------|
-|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |      - |        |     12 |
-|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |      - |        |     12 |
-|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |      - |        |     14 |
-|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |        |     16 |
-|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |        |     16 |
-|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |      - |        |     16 |
-|   4.1.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
-|   4.1.3 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |     20 |
-|   4.2.0 | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |     20 |
-|   5.0.0 | 0.34.3 |  8.17.1 |  1.20.1 |   1.6.0 |    1.0.16 |    4.1 | 3.12.1 |     22 |
-|   5.1.0 | 0.34.4 |  8.17.2 |  1.20.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     22 |
-|   6.0.0 | 0.34.5 |  8.17.3 |  1.21.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |     24 |
-|   6.1.0 | 0.35.1 |  8.18.3 |  1.23.0 |   1.6.0 |    1.0.18 |    4.1 | 3.14.1 |     24 |
-|   6.2.0 | 0.35.5 |  8.18.7 |  1.23.6 |   1.6.0 |    1.1.3  |    4.2 | 3.15.1 |     24 |
+| release |  sharp | libvips | libheif | libwebp | libde265  |   x265 | libaom | libimagequant | cgif  | nodejs |
+|---------|--------|---------|---------|---------|-----------|--------|--------|---------------|-------|--------|
+|   1.2.0 | 0.28.2 |  8.10.6 |  1.12.0 |   1.2.0 |    1.0.8  |      - |        |             - |     - |     12 |
+|   1.1.0 | 0.27.0 |  8.10.5 |  1.10.0 |   1.1.0 |    1.0.8  |      - |        |             - |     - |     12 |
+|   2.0.0 | 0.29.1 |  8.11.3 |  1.12.0 |   1.2.1 |    1.0.8  |      - |        |             - |     - |     14 |
+|   3.0.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |        |             - |     - |     16 |
+|   3.1.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.2.4 |    1.0.8  |      - |        |             - |     - |     16 |
+|   3.2.0 | 0.30.7 |  8.12.2 |  1.12.0 |   1.3.2 |    1.0.12 |      - |        |             - |     - |     16 |
+|   4.1.0 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |             - |     - |     20 |
+|   4.1.3 | 0.33.3 |  8.15.2 |  1.17.6 |   1.4.0 |    1.0.15 |    3.6 |        |             - |     - |     20 |
+|   4.2.0 | 0.33.5 |  8.15.3 |  1.18.2 |   1.4.0 |    1.0.15 |    3.6 |  3.9.1 |             - |     - |     20 |
+|   5.0.0 | 0.34.3 |  8.17.1 |  1.20.1 |   1.6.0 |    1.0.16 |    4.1 | 3.12.1 |             - |     - |     22 |
+|   5.1.0 | 0.34.4 |  8.17.2 |  1.20.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |             - |     - |     22 |
+|   6.0.0 | 0.34.5 |  8.17.3 |  1.21.2 |   1.6.0 |    1.0.16 |    4.1 | 3.13.1 |             - |     - |     24 |
+|   6.1.0 | 0.35.1 |  8.18.3 |  1.23.0 |   1.6.0 |    1.0.18 |    4.1 | 3.14.1 |             - |     - |     24 |
+|   6.2.0 | 0.35.5 |  8.18.7 |  1.23.6 |   1.6.0 |    1.1.3  |    4.2 | 3.15.1 |             - |     - |     24 |
+|   6.3.0 | 0.35.5 |  8.18.7 |  1.23.6 |   1.6.0 |    1.1.3  |    4.2 | 3.15.1 |         2.4.1 | 0.5.4 |     24 |
+
+### Note regarding GIF and palette PNG output
+libvips needs [cgif](https://github.com/dloebl/cgif) to write GIF files and an image quantiser to write GIF and palette PNG (`png({ palette: true })`) files. The layer builds cgif 0.5.4 and the BSD-licensed [libimagequant 2.4.1 fork](https://github.com/lovell/libimagequant) also used by sharp's prebuilt binaries. Without them, saving a GIF fails with `VipsOperation: class "gifsave_buffer" not found` ([#13](https://github.com/zoellner/sharp-heic-lambda-layer/issues/13)), and `palette: true` is ignored.
 
 ### Note regarding HEIF security limits
 `libvips` 8.18.3 and earlier cap `libheif`'s `max_items` at 16 when loading HEIF/HEIC files. Many files written by recent phone cameras exceed this (for example `iinf`, `iref` and `ipma` boxes with 20 to 50 entries) and fail to load with `Security limit exceeded`. `libvips` 8.18.4 raised these limits, and `sharp` 0.35.5 requires `libvips` 8.18.7 or later, so the layer no longer needs any patching to load these files.
@@ -113,6 +117,8 @@ You can also use the Sponsor button on the right if you'd like.
 - libwebp is Copyright Google Inc. See https://github.com/webmproject/libwebp/blob/master/COPYING for details.
 - sharp is licensed under the Apache License, Version 2.0. Copyright Lovell Fuller and contributors. See https://github.com/lovell/sharp/blob/master/LICENSE for details.
 - libvips is licensed under the LGPL 2.1+. See https://github.com/libvips/libvips/blob/master/COPYING for details.
+- cgif is licensed under the MIT License. Copyright Daniel Löbl. See https://github.com/dloebl/cgif/blob/main/LICENSE for details.
+- libimagequant 2.4.x is licensed under the BSD 2-Clause License. Copyright Greg Roelofs and Kornel Lesiński. See https://github.com/lovell/libimagequant/blob/main/COPYRIGHT for details.
 - libaom is subject to the terms of the BSD 2 Clause License and the Alliance for Open Media Patent License 1.0. See https://aomedia.googlesource.com/aom/#license-header
 - The remainder of the code in this repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
@@ -125,4 +131,6 @@ Visit [sharp.pixelplumbing.com](https://sharp.pixelplumbing.com/) for complete i
 - [libde265](https://github.com/strukturag/libde265)
 - [libwebp](https://github.com/webmproject/libwebp)
 - [libvips](https://github.com/libvips/libvips)
+- [cgif](https://github.com/dloebl/cgif)
+- [libimagequant](https://github.com/lovell/libimagequant)
 - [libaom](https://aomedia.googlesource.com/aom/)

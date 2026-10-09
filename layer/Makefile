@@ -4,6 +4,8 @@ LIBDE265_VERSION=1.1.3
 LIBAOM_VERSION=3.15.1
 X265_VERSION=4.2
 LIBHEIF_VERSION=1.23.6
+LIBIMAGEQUANT_VERSION=2.4.1
+CGIF_VERSION=0.5.4
 VIPS_VERSION=8.18.7
 SHARP_VERSION=0.35.5
 NODE_ADDON_API_VERSION=8.9.2
@@ -15,6 +17,8 @@ LIBDE265_SHA256=554228bd17788c99a7e63b37ab5634722190e6e2bf60c1dcb01cef328e133905
 LIBAOM_SHA256=8ca0c52746174603500f0adb6f2a215d69c9ca2aab2acb3caa06fb791d8d01bf
 X265_SHA256=40b1ea0453e0309f0eba934e0ddf533f8f6295966679e8894e8f1c1c8d5e1210
 LIBHEIF_SHA256=4484346dc5995319dbc11e3a1c35d0a2ec46511ce370900869337fd2c7033125
+LIBIMAGEQUANT_SHA256=47d2a84b7b1052975c9d50a3d4e3cacbf57b43d84a4c3131210848ead9964dfb
+CGIF_SHA256=83a70a15bc2da41f081a44ebc58ee48e2e1d524a6d3fdb4a24064afa08d5ad4d
 VIPS_SHA256=5baaead3b0bb20ffdb9e9ff09aa9fda08620923df77b63b436654cb5e0b3bf94
 
 # CodeBuild medium instances can OOM when libaom compiles with full parallelism.
@@ -38,7 +42,7 @@ echo "$(3)  $(1)" | sha256sum -c -
 endef
 ARTIFACTS_NODEJS_DIR=$(ARTIFACTS_DIR)/nodejs
 ARTIFACTS_LIB_DIR=$(ARTIFACTS_DIR)/lib
-.PHONY: build-SharpHEICLayer clean installLib system-libs verifySystemLibs codec-stack verifyCodecStack verifyLibvips libwebp libde265 x265 libaom libheif libvips
+.PHONY: build-SharpHEICLayer clean installLib system-libs verifySystemLibs codec-stack verifyCodecStack verifyLibvips libwebp libimagequant cgif libde265 x265 libaom libheif libvips
 
 build-SharpHEICLayer: libvips
 	@printf '\n==> %s\n' "Preparing layer artifacts"
@@ -46,7 +50,7 @@ build-SharpHEICLayer: libvips
 	mkdir -p "$(ARTIFACTS_NODEJS_DIR)" "$(ARTIFACTS_LIB_DIR)"
 
 	@printf '\n==> %s\n' "Using dependency versions"
-	printf '  sharp=%s\n  libvips=%s\n  libheif=%s\n  libwebp=%s\n  libde265=%s\n  x265=%s\n  libaom=%s\n' "$(SHARP_VERSION)" "$(VIPS_VERSION)" "$(LIBHEIF_VERSION)" "$(WEBP_VERSION)" "$(LIBDE265_VERSION)" "$(X265_VERSION)" "$(LIBAOM_VERSION)"
+	printf '  sharp=%s\n  libvips=%s\n  libheif=%s\n  libwebp=%s\n  libde265=%s\n  x265=%s\n  libaom=%s\n  libimagequant=%s\n  cgif=%s\n' "$(SHARP_VERSION)" "$(VIPS_VERSION)" "$(LIBHEIF_VERSION)" "$(WEBP_VERSION)" "$(LIBDE265_VERSION)" "$(X265_VERSION)" "$(LIBAOM_VERSION)" "$(LIBIMAGEQUANT_VERSION)" "$(CGIF_VERSION)"
 
 	@printf '\n==> %s\n' "Installing sharp build prerequisites"
 	npm install --save --prefix "$(ARTIFACTS_NODEJS_DIR)/" node-addon-api@$(NODE_ADDON_API_VERSION) node-gyp@$(NODE_GYP_VERSION)
@@ -84,6 +88,22 @@ libwebp:
 	$(call fetch_verify,libwebp-$(WEBP_VERSION).tar.gz,https://github.com/webmproject/libwebp/archive/v$(WEBP_VERSION).tar.gz,$(WEBP_SHA256))
 	tar zxf "libwebp-$(WEBP_VERSION).tar.gz"
 	cd libwebp-$(WEBP_VERSION) && ./autogen.sh && ./configure --enable-libwebpmux --prefix=$(PREFIX_PATH) && make V=0 -j$(BUILD_JOBS) && make install
+
+# libvips needs an image quantiser for GIF output and palette PNG output. libimagequant 2.4.x is the
+# BSD-licensed fork used by sharp's prebuilt binaries (upstream 4.x is GPL-3.0).
+libimagequant:
+	@printf '\n==> %s\n' "Building libimagequant $(LIBIMAGEQUANT_VERSION)"
+	rm -rf "libimagequant-$(LIBIMAGEQUANT_VERSION)"
+	$(call fetch_verify,libimagequant-$(LIBIMAGEQUANT_VERSION).tar.gz,https://github.com/lovell/libimagequant/archive/v$(LIBIMAGEQUANT_VERSION).tar.gz,$(LIBIMAGEQUANT_SHA256))
+	tar zxf "libimagequant-$(LIBIMAGEQUANT_VERSION).tar.gz"
+	cd libimagequant-$(LIBIMAGEQUANT_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} --buildtype release && meson compile -C build -j $(BUILD_JOBS) && meson install -C build
+
+cgif:
+	@printf '\n==> %s\n' "Building cgif $(CGIF_VERSION)"
+	rm -rf "cgif-$(CGIF_VERSION)"
+	$(call fetch_verify,cgif-$(CGIF_VERSION).tar.gz,https://github.com/dloebl/cgif/archive/v$(CGIF_VERSION).tar.gz,$(CGIF_SHA256))
+	tar zxf "cgif-$(CGIF_VERSION).tar.gz"
+	cd cgif-$(CGIF_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} --buildtype release -Dexamples=false -Dtests=false && meson compile -C build -j $(BUILD_JOBS) && meson install -C build
 
 codec-stack: libheif verifyCodecStack
 
@@ -139,18 +159,19 @@ libheif: x265 libde265 libaom
 	tar zxf "libheif-$(LIBHEIF_VERSION).tar.gz"
 	cd libheif-$(LIBHEIF_VERSION) && mkdir -p build && cd build && cmake -DCMAKE_INSTALL_LIBDIR=$(LIB_PATH) -DWITH_EXAMPLES=OFF --preset=release-noplugins .. && make V=0 -j$(BUILD_JOBS) && make install
 
-libvips: system-libs codec-stack libwebp
+libvips: system-libs codec-stack libwebp libimagequant cgif
 	@printf '\n==> %s\n' "Building libvips $(VIPS_VERSION)"
 	rm -rf "vips-$(VIPS_VERSION)"
 	$(call fetch_verify,vips-$(VIPS_VERSION).tar.xz,https://github.com/libvips/libvips/releases/download/v$(VIPS_VERSION)/vips-$(VIPS_VERSION).tar.xz,$(VIPS_SHA256))
 	tar xJf "vips-$(VIPS_VERSION).tar.xz"
-	cd vips-$(VIPS_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled --buildtype release && meson compile -C build -j $(BUILD_JOBS) && meson install -C build
+	cd vips-$(VIPS_VERSION) && meson setup build --prefix ${PREFIX_PATH} --libdir ${LIB_PATH} -Dheif=enabled -Dheif-module=disabled -Dlcms=enabled -Dimagequant=enabled -Dcgif=enabled --buildtype release && meson compile -C build -j $(BUILD_JOBS) && meson install -C build
 	$(MAKE) verifyLibvips
 
 verifyLibvips:
 	@printf '\n==> %s\n' "Verifying libvips build"
 	pkg-config --modversion vips-cpp
 	"$(PREFIX_PATH)/bin/vips" -l | awk '/Heif/ { found = 1 } END { exit(found ? 0 : 1) }'
+	"$(PREFIX_PATH)/bin/vips" -l | awk '/gifsave_buffer/ { found = 1 } END { exit(found ? 0 : 1) }'
 
 # libheif: libde265
 # 	# libheif
@@ -188,6 +209,8 @@ clean:
 	@printf '\n==> %s\n' "Removing downloaded source directories"
 	rm -rf \
 		"libwebp-$(WEBP_VERSION)" "libwebp-$(WEBP_VERSION).tar.gz" \
+		"libimagequant-$(LIBIMAGEQUANT_VERSION)" "libimagequant-$(LIBIMAGEQUANT_VERSION).tar.gz" \
+		"cgif-$(CGIF_VERSION)" "cgif-$(CGIF_VERSION).tar.gz" \
 		"libde265-$(LIBDE265_VERSION)" "libde265-$(LIBDE265_VERSION).tar.gz" \
 		"x265_$(X265_VERSION)" "x265_$(X265_VERSION).tar.gz" \
 		"libaom-$(LIBAOM_VERSION)" "libaom-$(LIBAOM_VERSION).tar.gz" \
